@@ -299,6 +299,21 @@ const DAYS = [
    {t:'貼公告提醒大家持續遵守。', d:[0,-2,-4], r:'只有提醒沒有制度，習慣慢慢回去。', ok:false}]},
 ];
 const LAB=['共識','士氣','績效'];
+// ---------- 結果回傳設定：Google 表單預填連結（由 Apps Script 產生後貼入；留空則只顯示複製按鈕） ----------
+const FORM={
+  base:'',   // 例：https://docs.google.com/forms/d/e/XXXX/viewform
+  entry:{name:'',unit:'',mode:'',q:['','','','','','','',''],v1:'',v2:'',v3:'',grade:'',code:''}
+};
+function resultCode(){return `${S.mode==='lite'?'同仁':'Pro'}｜${S.picks.map(p=>p+1).join('-')}｜共識${S.v[0]} 士氣${S.v[1]} 績效${S.v[2]}｜符合${S.pts}/8`}
+function formURL(grade,unit,name){
+  if(!FORM.base) return '';
+  const p=new URLSearchParams({usp:'pp_url'});
+  const put=(k,v)=>{if(k&&v!==undefined)p.append(k,String(v))};
+  put(FORM.entry.name,name||''); put(FORM.entry.unit,unit||''); put(FORM.entry.mode,MODES[S.mode].name);
+  S.picks.forEach((pk,i)=>put(FORM.entry.q[i],pk+1));
+  put(FORM.entry.v1,S.v[0]);put(FORM.entry.v2,S.v[1]);put(FORM.entry.v3,S.v[2]);put(FORM.entry.grade,grade);put(FORM.entry.code,resultCode());
+  return FORM.base+'?'+p.toString();
+}
 const ROLE={lite:'單位變革種子',pro:'主管（院長視角決策）'};
 const getD=i=>{const b=DAYS[i];return S.mode==='lite'?Object.assign({},b,b.lite):b};
 const MODES={lite:{name:'同仁體驗版',start:[30,50,20],neg:1,ev:false},pro:{name:'主管 Pro 版',start:[20,40,15],neg:1.5,ev:true}};
@@ -394,8 +409,16 @@ function endScreen(){
   show(`<div class="layout"><div class="panel">${meCard()}</div><div class="panel"><div class="grade"><p class="eyebrow">你的 8 週</p><div class="big">${g[0]}</div><p class="lead" style="margin-top:8px">共識 ${S.v[0]}　士氣 ${S.v[1]}　績效 ${S.v[2]}　平均 ${avg}</p><p class="lead">符合 Kotter 作法 ${S.pts} / 8</p><p class="note">${g[1]}</p></div>
   <div class="recap">${DAYS.map((d,i)=>`<div><span class="k">${i+1}</span><span>${d.step}：${getD(i).opts[S.picks[i]].ok?'符合':'有差距'}</span></div>`).join('')}</div>
   <div class="tip" style="margin-top:12px"><b>一句話帶走</b><br>營造迫切感與共識 → 掃除障礙、全員賦能 → 短期勝果樹立信心 → 融入組織文化。</div><p class="note">數值為示範設定，用於討論，非實際院務資料。</p>
-  <button class="btn" id="again">再玩一次</button><button class="btn ghost" id="sw">換一個版本</button></div></div>`);
+  <div class="panel" style="margin-top:12px;background:var(--panel2)"><h3>回傳結果，協助院內統整</h3>
+  <div class="grid2"><div class="field"><label for="pname">姓名（必填）</label><input type="text" id="pname" maxlength="20" placeholder="請輸入姓名"></div><div class="field"><label for="unit">單位（必填）</label><input type="text" id="unit" maxlength="20" placeholder="例：7A 病房"></div></div>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><code id="code" style="font-size:16px;background:#0E161E;border:1px solid var(--line2);border-radius:8px;padding:8px 10px;flex:1;min-width:0;word-break:break-all">${resultCode()}</code><button class="btn" id="copy" style="width:auto;margin:0;padding:10px 16px;font-size:18px">複製結果</button></div>
+  <p class="note" style="text-align:left">${FORM.base?'按「回傳表單」會開啟已預填的 Google 表單，確認後按提交即可。':'填姓名與單位後複製，貼到 LINE 群組給品管中心即可。'}</p>
+  ${FORM.base?'<button class="btn" id="send">回傳表單 →</button>':''}</div>
+  <button class="btn ghost" id="again">再玩一次</button><button class="btn ghost" id="sw">換一個版本</button></div></div>`);
   Q('again').onclick=briefScreen;Q('sw').onclick=verScreen;
+  const unitEl=Q('unit'),nameEl=Q('pname');const ident=()=>`${nameEl.value.trim()}／${unitEl.value.trim()}`;const ready=()=>nameEl.value.trim()&&unitEl.value.trim();
+  Q('copy').onclick=async()=>{if(!ready()){nameEl.focus();Q('copy').textContent='請先填姓名與單位';return;}const t=ident()+'｜'+resultCode();try{await navigator.clipboard.writeText(t);Q('copy').textContent='已複製';}catch(e){const r=document.createRange();r.selectNodeContents(Q('code'));const sel=getSelection();sel.removeAllRanges();sel.addRange(r);Q('copy').textContent='請長按複製';}};
+  if(FORM.base){Q('send').onclick=()=>{if(!ready()){nameEl.focus();Q('send').textContent='請先填姓名與單位';return;}window.open(formURL(g[0],unitEl.value.trim(),nameEl.value.trim()),'_blank')}}
 }
 function start(data){
   $('bgart').innerHTML=bgSVG();
