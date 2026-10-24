@@ -341,9 +341,9 @@ function verScreen(){
 // ---------- 3 交接單 ----------
 function briefScreen(){
   S.phase='brief';S.v=[...MODES[S.mode].start];S.day=0;S.pts=0;S.picks=[];timeline();
-  hud('交接 · 松山分院 · 院長室 · '+MODES[S.mode].name,S.mode==='lite'?'這 8 週，單位的變革種子是你':'這 8 週，松山分院交給你了',S.mode==='lite'?'你被指定為單位的變革種子；先看完現況單，準備好再開始':'你以院長視角做決策；先看完交接單，準備好再開始','W1','第 1 週');
+  hud('現況 · 松山分院 · 院長室 · '+MODES[S.mode].name,S.mode==='lite'?'這 8 週，單位的變革種子是你':'這 8 週，松山分院交給你了',S.mode==='lite'?'你被指定為單位的變革種子；先看完現況單，準備好再開始':'你以院長視角做決策；先看完現況單，準備好再開始','W1','第 1 週');
   show(`<div class="layout"><div class="panel">${meCard()}<div style="margin-top:12px"><h3>你的變革團隊</h3><div class="team">${['副院長','護理部','急診部','通資組','醫品中心','人資行政組'].map(t=>`<div><span>${t.slice(0,2)}</span>${t}</div>`).join('')}</div></div></div>
-  <div><div class="paper"><h3>${S.mode==='lite'?'單位現況單':'院務交接單'} <small>${S.mode==='lite'?'單位主管 → 你':'前任院長 → 你'} · 第 1 週</small></h3>
+  <div><div class="paper"><h3>${S.mode==='lite'?'單位現況單':'院務現況單'} <small>${S.mode==='lite'?'單位主管 → 你':'經管會 → 你'} · 第 1 週</small></h3>
     <div class="row"><b>急診待床</b><div>平均 18 小時<small>病人在急診等住院病床的時間，假設值</small></div></div>
     <div class="row"><b>病床周轉</b><div>平均 6 小時<small>出院到下一位病人可入住的時間，假設值</small></div></div>
     <div class="row"><b>滿意度下降</b><div>病人抱怨因住院延遲而起，本季持續增加</div></div>
