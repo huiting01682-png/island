@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0B1118">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta property="og:title" content="經營島｜Kotter 八步驟醫院變革互動遊戲">
+<meta property="og:description" content="三軍總醫院松山分院｜8 週走一次醫院變革：同仁體驗版／主管 Pro 版">
+<title>經營島</title>
+<style>
+/* 版面：深色電影感管理模擬。全畫面深藍黑底＋暗化醫院等角背景；中央為半透明面板，各階段面板推移切換；底部 8 週時間軸 */
+:root{
+  --bg:#0B1118; --bg2:#121B25; --panel:rgba(14,22,31,.92); --panel2:#17222E; --line:#24323F; --line2:#2F4152;
+  --fg:#E8EEF3; --sub:#93A3B3; --mute:#5E6F80;
+  --teal:#5FD4C0; --teal2:#2FA891; --amber:#F5C451; --coral:#F07A6A; --sky:#7DB7E8;
+  --paper:#F5EFE1; --paperfg:#2B2318; --paperline:#E2D7C0;
+  --btn:#5FD4C0; --onbtn:#0B1118;
+  --c1:#F07A6A; --c2:#F5C451; --c3:#5FD4C0;
+  --font:"Microsoft JhengHei","PingFang TC","Noto Sans TC",system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:17px;line-height:1.5;overflow:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+#app{position:relative;height:100%;max-width:980px;margin:0 auto;overflow:hidden;display:flex;flex-direction:column}
+#bgart{position:absolute;inset:0;z-index:0;opacity:.45}
+#bgart svg{width:100%;height:100%;display:block}
+#app::after{content:"";position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse at 50% 30%,rgba(11,17,24,.1),rgba(11,17,24,.85) 70%)}
+#hud{position:relative;z-index:2;display:flex;align-items:center;gap:12px;padding-block:6px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:linear-gradient(rgba(11,17,24,.95),rgba(11,17,24,.6));border-bottom:1px solid var(--line)}
+#hud .crumb{font-size:14px;color:var(--teal);letter-spacing:.08em}
+#hud h1{margin:0;font-size:20px;font-weight:800;line-height:1.2}
+#hud .sub{font-size:15px;color:var(--sub)}
+#clock{margin-left:auto;text-align:right}
+#clock b{display:block;font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:.04em;line-height:1}
+#clock span{font-size:14px;color:var(--sub)}
+#stage{position:relative;z-index:1;flex:1;min-height:0;overflow:hidden}
+.screen{position:absolute;inset:0;overflow-y:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px 16px;transform:translateX(100%);transition:transform .45s cubic-bezier(.4,0,.2,1)}
+.screen.cur{transform:translateX(0)} .screen.out{transform:translateX(-100%)}
+@media (prefers-reduced-motion:reduce){.screen,.bar i{transition:none}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;backdrop-filter:blur(6px)}
+.eyebrow{font-size:14px;color:var(--teal);letter-spacing:.08em;margin:0 0 6px}
+h2{margin:0 0 6px;font-size:26px;font-weight:800;line-height:1.25;text-wrap:balance}
+h3{margin:0 0 8px;font-size:19px;font-weight:800}
+p{margin:0}
+.lead{color:var(--sub);font-size:17px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.grid2{grid-template-columns:1fr}}
+.vcard{background:var(--panel2);border:1px solid var(--line2);border-radius:14px;padding:14px;display:flex;gap:14px;align-items:stretch;cursor:pointer;text-align:left;color:var(--fg);font:inherit;width:100%}
+.vcard:hover,.vcard:focus-visible{border-color:var(--teal);outline:none}
+.vcard .por{width:120px;flex:none;border-radius:10px;overflow:hidden;background:#0E1A22;border:1px solid var(--line2)}
+.vcard .por img,.vcard .por svg{display:block;width:100%;height:100%;object-fit:cover}
+.tag{display:inline-block;font-size:13px;color:var(--teal);border:1px solid var(--teal2);border-radius:999px;padding:2px 10px;letter-spacing:.06em;margin-bottom:6px}
+.vcard h3{margin-bottom:4px}
+.vcard p{font-size:16px;color:var(--sub)}
+.vcard .go{margin-top:auto;color:var(--teal);font-weight:800;font-size:17px;padding-top:8px}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font-size:15px;color:var(--sub);letter-spacing:.04em}
+input[type=text]{font:inherit;font-size:18px;color:var(--fg);background:#0E161E;border:1px solid var(--line2);border-radius:10px;padding:10px 12px}
+input[type=text]:focus{outline:none;border-color:var(--teal)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.seg button{font:inherit;font-size:16px;color:var(--fg);background:#0E161E;border:1px solid var(--line2);border-radius:10px;padding:10px;text-align:left;cursor:pointer}
+.seg button.on{border-color:var(--teal);background:rgba(95,212,192,.1)}
+.seg button small{display:block;color:var(--sub);font-size:14px}
+.pick{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pick button{font:inherit;color:var(--fg);background:var(--panel2);border:2px solid var(--line2);border-radius:14px;padding:10px;cursor:pointer}
+.pick button.on{border-color:var(--teal)}
+.pick .por{aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:#0E1A22}
+.pick .por img,.pick .por svg{display:block;width:100%;height:100%;object-fit:cover}
+.pick b{display:block;margin-top:8px;font-size:17px}
+.btn{appearance:none;border:0;border-radius:12px;background:var(--btn);color:var(--onbtn);font:inherit;font-size:19px;font-weight:800;padding:14px 18px;width:100%;cursor:pointer;margin-top:14px}
+.btn.ghost{background:transparent;color:var(--teal);border:1px solid var(--teal2)}
+.btn:focus-visible,.opt:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.note{color:var(--mute);font-size:15px;margin-top:10px}
+/* 交接單（紙張） */
+.paper{background:var(--paper);color:var(--paperfg);border-radius:12px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.paper h3{color:var(--paperfg);display:flex;justify-content:space-between;align-items:baseline}
+.paper h3 small{font-weight:400;color:#6B5E48;font-size:14px}
+.paper .row{display:grid;grid-template-columns:86px 1fr;gap:10px;padding:10px 0;border-bottom:1px solid var(--paperline);font-size:16px}
+.paper .row b{color:#1E7D68;font-variant-numeric:tabular-nums}
+.paper .row small{display:block;color:#6B5E48;font-size:15px}
+.paper .foot{font-size:14px;color:#6B5E48;margin-top:10px}
+.layout{display:grid;grid-template-columns:200px 1fr;gap:14px}
+@media (max-width:760px){.layout{grid-template-columns:1fr}.layout>.panel:first-child{order:2}.me .por{max-width:120px}}
+.me{display:flex;flex-direction:column;gap:10px}
+.me .por{aspect-ratio:3/4;border-radius:12px;overflow:hidden;background:#0E1A22;border:1px solid var(--line2);max-width:220px}
+.me .por img,.me .por svg{display:block;width:100%;height:100%;object-fit:cover}
+.me .nm{font-size:17px;font-weight:800}
+.me .nm small{display:block;color:var(--sub);font-weight:400;font-size:14px}
+.stat b{display:flex;justify-content:space-between;font-size:15px;color:var(--sub);font-weight:600}
+.stat .num{color:var(--fg);font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:999px;background:#1C2834;margin-top:4px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:999px;transition:width .6s ease}
+.s1 i{background:var(--c1)} .s2 i{background:var(--c2)} .s3 i{background:var(--c3)}
+.team{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.team div{text-align:center;font-size:14px;color:var(--sub)}
+.team span{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:#1C2834;border:1px solid var(--line2);color:var(--fg);font-weight:800;margin:0 auto 4px;font-size:15px}
+.rules{font-size:15px;color:var(--sub);display:flex;flex-direction:column;gap:6px}
+.rules b{color:var(--amber)}
+/* 情境 */
+.scene{border-radius:12px;overflow:hidden;border:1px solid var(--line2);background:#0E1A22;aspect-ratio:4/3;max-height:220px}
+.qrow{display:grid;grid-template-columns:minmax(200px,290px) 1fr;gap:14px;align-items:start}
+@media (max-width:640px){.qrow{grid-template-columns:1fr}.scene{max-height:170px;aspect-ratio:16/9}}
+.scene img,.scene svg{display:block;width:100%;height:100%;object-fit:cover}
+.who{display:flex;gap:10px;align-items:flex-start;background:var(--panel2);border:1px solid var(--line2);border-radius:12px;padding:12px}
+.who .q{font-size:18px;font-weight:700;line-height:1.5}
+.who .face{width:44px;height:44px;border-radius:50%;background:#2A3B4A;color:var(--teal);display:grid;place-items:center;font-weight:800;flex:none;font-size:15px}
+.who small{display:block;color:var(--sub);font-size:14px}
+.opts{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;width:100%;background:#0E161E;border:1px solid var(--line2);border-radius:12px;padding:12px;font:inherit;color:var(--fg);cursor:pointer;font-size:17px}
+.opt:hover{border-color:var(--teal)}
+.opt .k{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;background:#1C2834;color:var(--teal);font-weight:800;flex:none;font-family:ui-monospace,monospace}
+.delta{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.delta span{border-radius:999px;padding:4px 12px;font-weight:800;font-size:16px;font-variant-numeric:tabular-nums;border:1px solid}
+.up{color:var(--teal);border-color:var(--teal2)} .dn{color:var(--coral);border-color:#8A3E36} .eq{color:var(--sub);border-color:var(--line2)}
+.tip{border-left:3px solid var(--amber);padding:8px 12px;background:rgba(245,196,81,.08);border-radius:0 10px 10px 0;margin-top:12px;font-size:16px}
+.tip b{color:var(--amber)}
+.tip.ask{border-left-color:var(--coral);background:rgba(240,122,106,.08)}
+.tip.ask b{color:var(--coral)}
+.event{border:1px dashed var(--coral);border-radius:10px;padding:10px 12px;margin-top:12px;font-size:16px}
+.event b{color:var(--coral)}
+/* 底部時間軸 */
+#tl{position:relative;z-index:2;padding-block:10px calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:linear-gradient(rgba(11,17,24,.6),rgba(11,17,24,.98));border-top:1px solid var(--line)}
+#tl .track{position:relative;height:4px;background:#1C2834;border-radius:999px;margin:10px 10px 6px}
+#tl .track i{position:absolute;left:0;top:0;height:100%;background:var(--teal);border-radius:999px;transition:width .6s}
+#tl .marks{display:grid;grid-template-columns:repeat(8,1fr);font-size:12px;color:var(--mute);text-align:center;font-variant-numeric:tabular-nums}
+#tl .marks span{position:relative}
+#tl .marks span::before{content:"";display:block;width:10px;height:10px;border-radius:50%;background:#1C2834;border:2px solid var(--line2);margin:0 auto 4px}
+#tl .marks span.ok::before{background:var(--teal);border-color:var(--teal)}
+#tl .marks span.on::before{background:var(--amber);border-color:var(--amber);box-shadow:0 0 0 4px rgba(245,196,81,.25)}
+#tl .marks span.on{color:var(--amber)}
+#tl .marks span.ok{color:var(--sub)}
+#tl .marks em{display:block;font-style:normal;font-size:12px}
+@media (max-width:420px){#tl .marks em{display:none}}
+.grade{text-align:center;padding:10px 0}
+.grade .big{font-size:36px;font-weight:800;color:var(--teal);line-height:1.2}
+.recap{display:flex;flex-direction:column;gap:6px;font-size:15px;margin-top:12px}
+.recap div{display:flex;gap:8px;align-items:center;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:8px 10px}
+.recap .k{width:24px;height:24px;border-radius:6px;background:#1C2834;color:var(--teal);display:grid;place-items:center;font-size:13px;font-weight:800;flex:none}
+.back{background:none;border:0;color:var(--sub);font:inherit;font-size:15px;cursor:pointer;padding:8px 0;margin-top:8px}
+</style>
+<style>html,body{height:100%;margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+
+<div id="app">
+  <div id="bgart" aria-hidden="true"></div>
+  <div id="hud">
+    <div><div class="crumb" id="crumb">經營島 · 三軍總醫院松山分院</div><h1 id="htitle">選一個版本</h1><div class="sub" id="hsub">8 週，推動一次醫院變革</div></div>
+    <div id="clock"><b id="clockT">W0</b><span id="clockD">尚未開始</span></div>
+  </div>
+  <div id="stage"><div class="screen" id="sA"></div><div class="screen" id="sB"></div></div>
+  <div id="tl"><div class="track"><i id="tlFill" style="width:0%"></i></div><div class="marks" id="tlMarks"></div></div>
+</div>
+
+<script>
+// ---------- 圖片插槽：有檔案才填路徑，沒有時用向量圖 ----------
+const IMG={
+  day:['images/day1.jpg','images/day2.jpg','images/day3.jpg','images/day4.jpg','images/day5.jpg','images/day6.jpg','images/day7.jpg','images/day8.jpg'],
+  por:{m:'images/por_m.jpg',f:'images/por_f.jpg'},
+};
+function porSVG(sex){
+  const m=sex==='m', u='p'+sex;
+  // 髮型
+  const hair=m
+    ?`<path d="M48 92 C44 50 66 30 92 30 C118 30 138 48 134 90 C128 70 118 58 100 56 C86 54 72 58 60 70 C54 76 50 84 48 92Z" fill="url(#${u}h)"/><path d="M62 66 C72 52 96 48 112 56" fill="none" stroke="#5A4634" stroke-width="3" stroke-linecap="round" opacity=".7"/>`
+    :`<path d="M44 100 C38 50 64 26 92 26 C122 26 146 50 138 100 L136 140 C128 118 122 100 118 86 C104 92 80 92 66 84 C60 100 54 120 46 140Z" fill="url(#${u}h)"/><path d="M58 70 C70 56 94 52 114 60" fill="none" stroke="#6E4E38" stroke-width="3" stroke-linecap="round" opacity=".6"/><ellipse cx="140" cy="128" rx="14" ry="22" fill="url(#${u}h)"/>`;
+  const glasses=m?`<g fill="none" stroke="#2B2318" stroke-width="2.2"><rect x="60" y="100" width="26" height="18" rx="7"/><rect x="96" y="100" width="26" height="18" rx="7"/><path d="M86 108 L96 108"/><path d="M60 106 L52 102"/><path d="M122 106 L130 102"/></g>`:'';
+  const neck=m?`<path d="M80 150 L102 150 L104 172 L78 172Z" fill="#E8B88E"/><path d="M84 172 L91 198 L98 172Z" fill="#2E5B8F"/><path d="M78 168 L91 176 L104 168 L104 190 L78 190Z" fill="#CFE6F7"/><path d="M78 168 L91 176 L104 168" fill="none" stroke="#B9D4E8" stroke-width="1.5"/>`
+    :`<path d="M80 150 L102 150 L104 172 L78 172Z" fill="#E8B88E"/><path d="M76 168 Q91 184 106 168 L108 196 L74 196Z" fill="#CFE6F7"/><path d="M80 170 Q91 182 102 170" fill="none" stroke="#B9D4E8" stroke-width="1.5"/>`;
+  return `<svg viewBox="0 0 180 240" xmlns="http://www.w3.org/2000/svg"><defs>
+  <radialGradient id="${u}bg" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="#27485C"/><stop offset=".6" stop-color="#132431"/><stop offset="1" stop-color="#0B141B"/></radialGradient>
+  <linearGradient id="${u}sk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBDCC0"/><stop offset="1" stop-color="#E5B48C"/></linearGradient>
+  <linearGradient id="${u}h" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4A3728"/><stop offset="1" stop-color="#1F160F"/></linearGradient>
+  <linearGradient id="${u}c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D5DCE3"/></linearGradient>
+  <linearGradient id="${u}rim" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#5FD4C0" stop-opacity="0"/><stop offset="1" stop-color="#5FD4C0" stop-opacity=".55"/></linearGradient>
+  </defs>
+  <rect width="180" height="240" fill="url(#${u}bg)"/>
+  <ellipse cx="90" cy="236" rx="80" ry="18" fill="#000" opacity=".35"/>
+  <!-- 白袍 -->
+  <path d="M26 250 C26 206 46 186 74 178 L91 196 L108 178 C136 186 156 206 156 250Z" fill="url(#${u}c)"/>
+  <path d="M74 178 L91 196 L84 250 L60 250 L58 200Z" fill="#EEF2F6"/><path d="M108 178 L91 196 L98 250 L122 250 L124 200Z" fill="#EEF2F6"/>
+  <path d="M74 178 L91 196 L62 232 L54 204Z" fill="#FFFFFF" stroke="#C9D3DC" stroke-width="1"/><path d="M108 178 L91 196 L120 232 L128 204Z" fill="#FFFFFF" stroke="#C9D3DC" stroke-width="1"/>
+  ${neck}
+  <!-- 聽診器 -->
+  <path d="M70 180 C66 200 68 220 80 232" fill="none" stroke="#2B3C49" stroke-width="3.2" stroke-linecap="round"/><path d="M112 180 C116 200 114 220 102 232" fill="none" stroke="#2B3C49" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="80" cy="233" r="7" fill="#C8CED6" stroke="#2B3C49" stroke-width="2.5"/>
+  <!-- 名牌 -->
+  <rect x="116" y="208" width="26" height="16" rx="2" fill="#FFFFFF" stroke="#B9C3CE"/><rect x="119" y="212" width="12" height="2.5" fill="#5FD4C0"/><rect x="119" y="217" width="18" height="2" fill="#9AA7B4"/>
+  <!-- 耳 -->
+  <ellipse cx="50" cy="112" rx="7" ry="10" fill="#E5B48C"/><ellipse cx="132" cy="112" rx="7" ry="10" fill="#E5B48C"/>
+  <!-- 臉 -->
+  <path d="M52 100 C52 62 72 48 91 48 C110 48 130 62 130 100 C130 128 114 152 91 152 C68 152 52 128 52 100Z" fill="url(#${u}sk)"/>
+  <path d="M118 70 C130 86 130 118 112 142" fill="none" stroke="url(#${u}rim)" stroke-width="6" stroke-linecap="round"/>
+  ${hair}
+  <!-- 眉眼 -->
+  <path d="M62 92 Q73 86 84 92" fill="none" stroke="#3B2A1E" stroke-width="3" stroke-linecap="round"/><path d="M98 92 Q109 86 120 92" fill="none" stroke="#3B2A1E" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="73" cy="109" rx="7" ry="8" fill="#FFFFFF"/><ellipse cx="109" cy="109" rx="7" ry="8" fill="#FFFFFF"/>
+  <circle cx="74" cy="110" r="5" fill="#4A2E1A"/><circle cx="110" cy="110" r="5" fill="#4A2E1A"/><circle cx="74" cy="110" r="2.5" fill="#1A0E06"/><circle cx="110" cy="110" r="2.5" fill="#1A0E06"/>
+  <circle cx="76" cy="107" r="1.6" fill="#fff"/><circle cx="112" cy="107" r="1.6" fill="#fff"/>
+  ${glasses}
+  <path d="M88 118 Q91 128 96 124" fill="none" stroke="#C99A72" stroke-width="2" stroke-linecap="round"/>
+  <path d="M78 134 Q91 146 104 134" fill="none" stroke="#B2583F" stroke-width="2.8" stroke-linecap="round"/><path d="M82 136 Q91 141 100 136" fill="#FFFFFF"/>
+  <ellipse cx="66" cy="126" rx="7" ry="4" fill="#F2A0A0" opacity=".45"/><ellipse cx="116" cy="126" rx="7" ry="4" fill="#F2A0A0" opacity=".45"/>
+  </svg>`;
+}
+function sceneSVG(d){
+  return `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1B2E3C"/><stop offset="1" stop-color="#0E1A22"/></linearGradient></defs><rect width="400" height="300" fill="url(#sg)"/>
+  <g opacity=".5" stroke="#5FD4C0" stroke-width="1.5" fill="none">${[0,1,2,3,4].map(i=>`<path d="M${40+i*70} 230 l40 -24 l40 24 l-40 24Z"/>`).join('')}${[0,1,2,3].map(i=>`<path d="M${75+i*70} 206 l40 -24 l40 24 l-40 24Z"/>`).join('')}</g>
+  <rect x="140" y="120" width="120" height="90" rx="6" fill="#17222E" stroke="#2F4152"/><rect x="150" y="130" width="100" height="56" rx="3" fill="#0E161E" stroke="#5FD4C0" stroke-width="1.5"/>
+  <text x="200" y="166" text-anchor="middle" font-size="18" font-weight="800" fill="#5FD4C0" font-family="inherit">${d.place}</text>
+  <text x="200" y="262" text-anchor="middle" font-size="15" fill="#93A3B3" font-family="inherit">Step ${d.n}　${d.step}</text></svg>`;
+}
+function bgSVG(){ // 暗化醫院等角背景
+  let g='';
+  for(let r=0;r<9;r++)for(let c=0;c<14;c++){const x=60+(c-r)*46,y=40+(c+r)*23;g+=`<path d="M${x} ${y} l46 -23 l46 23 l-46 23Z" fill="${(r+c)%3?'#101A23':'#13202B'}" stroke="#1C2A36" stroke-width="1"/>`}
+  const rooms=[[2,1],[5,1],[8,1],[2,4],[5,4],[8,4],[11,3],[3,7],[7,7]];
+  rooms.forEach(([c,r])=>{const x=60+(c-r)*46,y=40+(c+r)*23;g+=`<path d="M${x} ${y-30} l46 -23 l46 23 l-46 23Z" fill="#1C2E3C"/><path d="M${x} ${y-30} l0 30 l46 23 l0 -30Z" fill="#14222D"/><path d="M${x+46} ${y-7} l0 30 l46 -23 l0 -30Z" fill="#182A37"/><rect x="${x+58}" y="${y-18}" width="10" height="7" fill="#5FD4C0" opacity=".35"/>`});
+  return `<svg viewBox="0 0 800 480" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg"><rect width="800" height="480" fill="#0B1118"/>${g}</svg>`;
+}
+
+// ---------- 內容 ----------
+const DAYS = [
+ {n:1,place:'主管會議室', time:'08:30', step:'建立危機意識', en:'Create a Sense of Urgency', who:'醫療部主任',
+  ask:'你是在製造恐懼，還是用真實數據建立共同的使命？',
+  lite:{who:'單位主管', say:'晨會上，單位主管轉達院長在主管會議提出的數據：急診待床 18 小時、病床周轉 6 小時。有同事小聲說：「那是急診的事。」你會怎麼接？', opts:[{t:'「對啊，跟我們病房無關，先把自己的事做好。」', d:[-5,0,-2], r:'把問題切割給別的單位，危機意識無法在單位內形成。', ok:false},{t:'「上週那位在急診等了一整晚才上來的病人，我們接手時也很累。流程卡在哪裡，我們最清楚。」', d:[12,6,2], r:'用自己單位的真實經驗說出必要性，同事才會覺得這件事與自己有關。', ok:true},{t:'「等上面定案再說，現在講也沒用。」', d:[-3,-2,-2], r:'等待決策，迫切性隨時間消失。', ok:false}]},
+  say:'院長，急診待床平均 18 小時、病床周轉 6 小時，病人抱怨這季又增加了。主管會議您打算怎麼開場？',
+  pro:'（Pro）會議前，急診主任私下提醒：有兩位資深主治認為「這是急診自己的問題」。',
+  opts:[
+   {t:'「再這樣下去會被衛生局處分，各單位限期改善。」', d:[+5,-12,+3], r:'用處分施壓，短期有動作，長期增加防衛與觀望。', ok:false},
+   {t:'「同仁很努力，但流程讓病人等太久，也讓第一線更累。要改的是流程，不是努力程度。」', d:[+15,+8,+2], r:'以數據、病人經驗與共同使命建立迫切性，不製造恐懼。', ok:true},
+   {t:'「先成立委員會研議，下一季再討論。」', d:[-5,0,-3], r:'延後處理，迫切性隨時間消失。', ok:false}]},
+ {n:2,place:'院長室', time:'10:00', step:'組成變革領導團隊', en:'Build a Guiding Coalition', who:'副院長',
+  ask:'你的變革團隊只是開會的委員會，還是有協調資源與排除障礙權力的決策核心？',
+  lite:{who:'單位主管', say:'單位主管問：院方要成立跨部門的病床管理小組，每個單位要一位變革種子。誰願意？', opts:[{t:'推給最資深的學姐，她比較懂。', d:[0,-3,0], r:'只靠資深者，單位其他人仍是旁觀者。', ok:false},{t:'自願參加，並找一位白班、一位夜班同事一起，讓三班都有人能回饋。', d:[10,6,3], r:'變革團隊要有第一線的聲音，而且要能把訊息帶回單位。', ok:true},{t:'參加，但只去開會、不把討論帶回單位。', d:[2,-2,0], r:'有名無實的代表，單位仍不知道改革在做什麼。', ok:false}]},
+  say:'改革要有人帶。您想怎麼組這個團隊？',
+  pro:'（Pro）資訊室主任下月退休，護理部主任同時兼評鑑窗口。',
+  opts:[
+   {t:'由我親自主持，各單位主管每週來報告。', d:[+3,-5,+2], r:'只靠院長推動，單點決策，主管更換就停。', ok:false},
+   {t:'交給醫品中心承辦，寫成專案計畫書即可。', d:[0,-3,0], r:'單一部門無法協調跨部門資源與權責。', ok:false},
+   {t:'由副院長召集，護理部、急診、臨床科、資訊室、醫品中心、行政都進來，指定專案負責人。', d:[+12,+6,+4], r:'跨部門、有決策力與影響力的領導團隊，能協調資源與排除障礙。', ok:true}]},
+ {n:3,place:'策略工作坊', time:'13:30', step:'建立策略願景', en:'Form a Strategic Vision', who:'專案負責人',
+  ask:'員工看到的是冰冷的 KPI，還是值得追隨的清晰未來？',
+  lite:{who:'專案負責人', say:'小組請每個單位寫出「理想的住院流程長什麼樣」，下週工作坊討論。你會怎麼寫？', opts:[{t:'直接抄另一家醫院的 SOP 交出去。', d:[2,-4,1], r:'未依本院病人組成與資源調整，同事認為不切實際。', ok:false},{t:'用病房的真實案例描述理想狀況，並提出可量的目標，例如出院到清床完成的時間。', d:[10,5,5], r:'願景要清楚、可轉成具體目標，第一線的描述最能說服人。', ok:true},{t:'寫「盡力而為、持續改善」交差。', d:[-3,0,-4], r:'沒有可衡量目標，改革無法判斷是否有效。', ok:false}]},
+  say:'團隊問：我們到底要把醫院變成什麼樣子？目標要怎麼訂？',
+  pro:'（Pro）總院希望本院一年內待床時間降到 8 小時以下，本院基準值是 18 小時。',
+  opts:[
+   {t:'願景：以病人為中心、即時透明、高效率且安全的智慧住院流程；一年目標依本院基準值設定、每季衡量。', d:[+10,+5,+6], r:'願景清楚、可轉成具體目標；數值依基準值設定，KPI 衡量成敗。', ok:true},
+   {t:'先不訂數字，做了再說。', d:[-4,+2,-5], r:'沒有可衡量目標，無法判斷改革是否有效。', ok:false},
+   {t:'直接套用醫學中心的指標目標值。', d:[+2,-6,+1], r:'未依病人組成與資源條件調整，第一線認為不切實際。', ok:false}]},
+ {n:4,place:'護理站', time:'15:00', step:'凝聚支持與參與', en:'Enlist a Volunteer Army', who:'病房護理長',
+  ask:'你的溝通是單向的政策佈達，還是讓員工從「要我改」變成「我願意」？',
+  lite:{who:'同事', say:'交班後，同事抱怨：「又來一個新專案，是不是又要多填一堆表？」', opts:[{t:'跟著一起抱怨：「對啊，上面都不懂我們多忙。」', d:[-6,-4,0], r:'情緒被同理了，但改革被定調為增加工作。', ok:false},{t:'說明目的是減少重複作業、把時間還給病人；再問同事最想砍掉哪個步驟，帶回小組。', d:[12,10,2], r:'從「主管要我改」變成「我願意參與改」，參與感來自被詢問。', ok:true},{t:'說：「上面規定的，沒辦法。」', d:[1,-6,0], r:'由上而下的語言，讓同事更覺得自己只是被要求的人。', ok:false}]},
+  say:'護理站同仁說：「又是一個新專案，是不是又要多填一堆表？」',
+  pro:'（Pro）護理離職率本季上升，三個病房人力缺口 12%。',
+  opts:[
+   {t:'發公文說明政策，要求各單位配合。', d:[+2,-8,0], r:'由上而下，員工仍把改革理解成增加工作。', ok:false},
+   {t:'到科部會議與護理站說明：目的是減少重複作業，把時間還給病人；邀請各單位提改善建議，培養單位推動者。', d:[+14,+12,+3], r:'從「主管要我改」變成「我願意參與改」。', ok:true},
+   {t:'辦一次全院宣導影片，線上簽到即可。', d:[+4,-2,0], r:'單向宣導，沒有對話與參與。', ok:false}]},
+ {n:5,place:'資訊室', time:'09:00', step:'排除改革障礙', en:'Enable Action by Removing Barriers', who:'資訊室主任',
+  ask:'進度卡關時，你在指責員工不夠努力，還是捲起袖子搬開水面下的石頭？',
+  lite:{who:'資訊室同仁', say:'病床資料要在紙本、Excel、HIS 各登一次，每天多花半小時。你會怎麼做？', opts:[{t:'自己加班補登，不要讓單位被記缺失。', d:[-2,-8,1], r:'用個人努力吸收制度缺陷，障礙仍在、士氣下降。', ok:false},{t:'記錄一週重複登錄的次數與耗時，提交小組，要求整合為單一登錄並明定病床釋出責任。', d:[8,10,6], r:'把障礙量化、提到能排除障礙的層級，是第一線最有力的作法。', ok:true},{t:'偶爾漏登，反正沒有人查。', d:[-5,-2,-4], r:'資料不完整，整合系統時反而更難。', ok:false}]},
+  say:'護理站反映：病床資料要在紙本、Excel、HIS 各登一次，排擠照護時間。',
+  pro:'（Pro）HIS 廠商報價整合費用 180 萬，本年度資訊預算只剩 60 萬。',
+  opts:[
+   {t:'請護理長加強督導，確保三處都登錄完整。', d:[-6,-12,+1], r:'要求更努力，障礙仍在，士氣下降。', ok:false},
+   {t:'增加一名行政助理協助登錄。', d:[+1,+3,+2], r:'用人力補流程缺口，成本持續、根因未除。', ok:false},
+   {t:'整合為單一登錄並自動同步，明定病床釋出責任、簡化程序，補足訓練。', d:[+8,+14,+8], r:'移除制度性障礙，是管理者最重要的工作之一。', ok:true}]},
+ {n:6,place:'試辦病房', time:'11:00', step:'創造短期成果', en:'Generate Short-Term Wins', who:'試辦病房護理長',
+  ask:'改革願景是遙不可及的大餅，還是三個月就讓員工有感的早期勝利？',
+  lite:{who:'護理長', say:'試辦三個月，病房清床時間從 6 小時降到 3.5 小時。院務會議要你上台分享。你會？', opts:[{t:'謙虛地說：「運氣好，病人比較單純。」', d:[-2,-3,3], r:'把成果歸於運氣，其他單位看不見可複製的作法。', ok:false},{t:'分享具體作法與數據，並點名每一位參與的同事。', d:[10,12,8], r:'短期成果公開、歸功團隊，建立信任並降低其他單位的抗拒。', ok:true},{t:'盡量少講，怕之後被要求更多。', d:[-4,-4,2], r:'成果看不見，動能無法擴散。', ok:false}]},
+  say:'兩個病房試辦三個月，周轉時間從 6 小時降到 3.5 小時。接下來？',
+  pro:'（Pro）另一個未試辦的病房主任在群組說：「他們病人比較單純，當然快。」',
+  opts:[
+   {t:'公開表揚參與團隊，在院務會議分享數據與作法，讓其他單位看見效益。', d:[+10,+14,+10], r:'短期成果建立信任、提升士氣、降低其他單位的抗拒。', ok:true},
+   {t:'數據先保留，等全院都做完再一起公布。', d:[-3,-4,+4], r:'成果看不見，過程中同仁失去信心。', ok:false},
+   {t:'直接要求全院下月全面上線。', d:[-5,-8,+6], r:'跳過擴散與調整，其他單位準備不足。', ok:false}]},
+ {n:7,place:'醫品中心', time:'14:00', step:'持續推動變革', en:'Sustain Acceleration', who:'醫品中心主任',
+  ask:'局部試辦見好就收，還是乘勝追擊、徹底終結舊模式？',
+  lite:{who:'鄰近病房護理師', say:'鄰近病房的同事說：「你們病人比較單純，當然快；我們做不到。」', opts:[{t:'不理會，自己單位做好就好。', d:[-3,-2,0], r:'改革停在一個單位，整體績效不會改善。', ok:false},{t:'邀請他們來觀摩一個早上，再一起調整適合他們病房的版本。', d:[10,6,10], r:'用短期成功的動能帶動其他單位，並允許因地調整。', ok:true},{t:'向主管投訴該病房不配合。', d:[-4,-8,1], r:'究責取代協助，其他單位轉為隱藏問題。', ok:false}]},
+  say:'試辦成功後，半年來有兩個單位又回到舊流程。您會怎麼做？',
+  pro:'（Pro）其中一個單位的主任是院內最資深的主治醫師。',
+  opts:[
+   {t:'初步成功就夠了，專案結案。', d:[-8,-5,-10], r:'成功一點就停止，單位逐漸回到原本工作模式。', ok:false},
+   {t:'逐步擴展到所有病房，並延伸到出院準備、住院安排、跨科會診；持續追蹤各單位績效、定期檢討未達標原因。', d:[+10,+6,+14], r:'用短期成功的動能推動更大範圍的制度改革。', ok:true},
+   {t:'對回到舊流程的單位扣考績。', d:[-4,-10,+2], r:'究責取代檢討原因，其他單位轉為隱藏問題。', ok:false}]},
+ {n:8,place:'教育訓練中心', time:'16:00', step:'將變革融入組織文化', en:'Institute Change', who:'人資與教研',
+  ask:'如果今天專案主管換人，這個制度還能自動運作嗎？',
+  lite:{who:'新進同仁', say:'新進護理師報到，問你病床釋出與交班怎麼做。你會？', opts:[{t:'「先照舊的做，熟了再說。」', d:[-5,0,-8], r:'新人學到舊流程，制度在交接中流失。', ok:false},{t:'用 SOP 與檢核表帶新人，並告訴他改善建議要往哪裡提。', d:[10,8,10], r:'把新流程寫進新人訓練與日常，變革才會留下來。', ok:true},{t:'口頭講一下，有問題再問。', d:[0,-2,-3], r:'沒有制度化的傳承，習慣慢慢回去。', ok:false}]},
+  say:'評鑑通過了。新流程要怎麼留下來，不靠院長每天督促？',
+  pro:'（Pro）您明年可能調任，接任者尚未確定。',
+  opts:[
+   {t:'召開慶功會，專案小組解散，等下次評鑑前再動員。', d:[-6,+2,-12], r:'評鑑前兩個月全院動員，不是變革，成果隨主管更換消失。', ok:false},
+   {t:'納入 SOP、新人教育訓練、主管績效指標與定期品質檢討，讓跨部門協調與持續改善成為日常。', d:[+12,+8,+12], r:'制度化：即使主管更換，制度仍能運作。這就是評鑑日常化。', ok:true},
+   {t:'貼公告提醒大家持續遵守。', d:[0,-2,-4], r:'只有提醒沒有制度，習慣慢慢回去。', ok:false}]},
+];
+const LAB=['共識','士氣','績效'];
+const ROLE={lite:'單位變革種子',pro:'主管（院長視角決策）'};
+const getD=i=>{const b=DAYS[i];return S.mode==='lite'?Object.assign({},b,b.lite):b};
+const MODES={lite:{name:'同仁體驗版',start:[30,50,20],neg:1,ev:false},pro:{name:'主管 Pro 版',start:[20,40,15],neg:1.5,ev:true}};
+let S={phase:'ver',mode:null,nick:'院長',sex:'m',day:0,v:[30,50,20],pts:0,picks:[]};
+const $=id=>document.getElementById(id);
+let cur='sA',nxt='sB';
+const Q=id=>$(cur).querySelector('#'+id);
+const clamp=n=>Math.max(0,Math.min(100,n));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// ---------- 畫面切換 ----------
+function show(html){
+  const a=$(cur),b=$(nxt);
+  b.innerHTML=html;b.classList.remove('out');b.style.transition='none';b.style.transform='translateX(100%)';
+  requestAnimationFrame(()=>{b.style.transition='';b.style.transform='';b.classList.add('cur');a.classList.remove('cur');a.classList.add('out');});
+  [cur,nxt]=[nxt,cur];b.scrollTop=0;
+}
+function hud(crumb,title,sub,t,d){$('crumb').textContent=crumb;$('htitle').textContent=title;$('hsub').textContent=sub;$('clockT').textContent=t;$('clockD').textContent=d}
+function timeline(){
+  $('tlMarks').innerHTML=DAYS.map((d,i)=>`<span class="${i<S.day?'ok':i===S.day&&S.phase!=='end'&&S.phase!=='ver'&&S.phase!=='setup'&&S.phase!=='brief'?'on':''}">${i+1}<em>${d.place}</em></span>`).join('');
+  const pct=S.phase==='end'?100:S.phase==='ver'||S.phase==='setup'||S.phase==='brief'?0:(S.day/8)*100+(S.phase==='fb'||S.phase==='night'?12.5*.6:0);
+  $('tlFill').style.width=pct+'%';
+}
+const porHTML=sex=>IMG.por[sex]?`<img src="${IMG.por[sex]}" alt="">`:porSVG(sex);
+function meCard(){
+  return `<div class="me"><div class="por">${porHTML(S.sex||'m')}</div><div class="nm">${S.mode==='lite'?'變革種子':'主管'}<small>${MODES[S.mode].name} · ${ROLE[S.mode]}</small></div>
+  ${S.v.map((n,i)=>`<div class="stat s${i+1}"><b>${LAB[i]}<span class="num">${n}</span></b><div class="bar"><i style="width:${n}%"></i></div></div>`).join('')}</div>`;
+}
+
+// ---------- 1 選版本 ----------
+function verScreen(){
+  S.phase='ver';timeline();hud('經營島 · 三軍總醫院松山分院','選一個版本','8 週，推動一次醫院變革','W0','尚未開始');
+  show(`<div class="panel"><p class="eyebrow">KOTTER 變革八步驟 · 互動模擬</p><h2>選一個版本</h2><p class="lead">接下來 8 週，整間醫院的變革由你帶。核心理念：讓改變從「管理者要求」變成「員工的日常習慣」。</p>
+  <div class="grid2" style="margin-top:14px">
+    <button class="vcard" id="vLite"><div class="por">${porHTML('f')}</div><div style="display:flex;flex-direction:column;min-width:0"><span class="tag">全院同仁 · 不需管理背景</span><h3>同仁體驗版</h3><p>你是單位的變革種子。8 個情境、每題三選一；玩完你會知道，一次變革第一線要過哪八關。</p><div class="go">開始體驗 →</div></div></button>
+    <button class="vcard" id="vPro"><div class="por">${porHTML('m')}</div><div style="display:flex;flex-direction:column;min-width:0"><span class="tag">各級主管 · 決策視角</span><h3>主管 Pro 版</h3><p>你以院長視角做 8 個決策。起始狀態較低、錯誤選擇扣分較重，每週多一條現實變數（預算、人力、人事）。</p><div class="go">進入 Pro 版 →</div></div></button>
+  </div><p class="note">情境與數值皆為示範設定，用於討論；非實際院務資料。</p></div>`);
+  Q('vLite').onclick=()=>{S.mode='lite';S.sex='f';briefScreen()};Q('vPro').onclick=()=>{S.mode='pro';S.sex='m';briefScreen()};
+}
+// ---------- 3 交接單 ----------
+function briefScreen(){
+  S.phase='brief';S.v=[...MODES[S.mode].start];S.day=0;S.pts=0;S.picks=[];timeline();
+  hud('交接 · 松山分院 · 院長室 · '+MODES[S.mode].name,S.mode==='lite'?'這 8 週，單位的變革種子是你':'這 8 週，松山分院交給你了',S.mode==='lite'?'你被指定為單位的變革種子；先看完現況單，準備好再開始':'你以院長視角做決策；先看完交接單，準備好再開始','W1','第 1 週');
+  show(`<div class="layout"><div class="panel">${meCard()}<div style="margin-top:12px"><h3>你的變革團隊</h3><div class="team">${['副院長','護理部','急診部','資訊室','醫品中心','行政'].map(t=>`<div><span>${t.slice(0,2)}</span>${t}</div>`).join('')}</div></div></div>
+  <div><div class="paper"><h3>${S.mode==='lite'?'單位現況單':'院務交接單'} <small>${S.mode==='lite'?'單位主管 → 你':'前任院長 → 你'} · 第 1 週</small></h3>
+    <div class="row"><b>急診待床</b><div>平均 18 小時<small>病人在急診等住院病床的時間，假設值</small></div></div>
+    <div class="row"><b>病床周轉</b><div>平均 6 小時<small>出院到下一位病人可入住的時間，假設值</small></div></div>
+    <div class="row"><b>滿意度下降</b><div>病人抱怨因住院延遲而起，本季持續增加</div></div>
+    <div class="row"><b>員工缺乏動力</b><div>習慣既有流程，對「又一個新專案」感到疲乏；工作負擔增加</div></div>
+    <div class="row"><b>部門協調</b><div>病床釋出責任不清；病床資料在紙本、Excel、HIS 重複登錄</div></div>
+    <div class="foot">從第 1 週起，每週一個地點、一個關鍵決定。數據均為示範設定。</div></div>
+  <div class="panel" style="margin-top:14px"><h3>怎麼玩</h3><div class="rules"><div><b>三條狀態</b>　共識（同仁理解並認同）、士氣（第一線願意投入）、績效（待床與周轉的改善），0–100。</div><div><b>每週一題</b>　三個選項都有後果，選完看解析與 Kotter 管理重點。</div>${MODES[S.mode].ev?'<div><b>Pro 變數</b>　每週多一條現實條件；與 Kotter 作法有差距的選擇，負向影響 ×1.5。</div>':''}<div><b>第 8 週結束</b>　依三條狀態給評語與逐週回顧。</div></div>
+  <button class="btn" id="start">我準備好了，開始第 1 週 ▶</button><button class="back" id="back">← 換一個版本</button></div></div></div>`);
+  Q('start').onclick=()=>dayScreen();Q('back').onclick=verScreen;
+}
+// ---------- 4 每日情境 ----------
+function dayScreen(){
+  S.phase='day';const d=getD(S.day);timeline();
+  hud(`第 ${d.n} 週 · ${d.place}`,`Step ${d.n}　${d.step}`,d.en,'W'+d.n,`第 ${d.n} 週`);
+  show(`<div class="layout"><div class="panel">${meCard()}</div>
+  <div class="panel"><div class="qrow"><div class="scene">${IMG.day[S.day]?`<img src="${IMG.day[S.day]}" alt="${d.place}">`:sceneSVG(d)}</div>
+  <div class="who"><div class="face">${d.who.slice(0,2)}</div><div><small>${d.who} · ${d.place} · 第 ${d.n} 週</small><div class="q">${d.say}</div></div></div></div>
+  ${MODES[S.mode].ev?`<div class="event"><b>現實變數</b>　${d.pro.replace('（Pro）','')}</div>`:''}
+  <div class="opts">${d.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${i+1}</span><span>${o.t}</span></button>`).join('')}</div></div></div>`);
+  $(cur).querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.i));
+}
+function pick(i){
+  const d=getD(S.day),o=d.opts[i],m=MODES[S.mode];
+  const dd=o.d.map(x=>x<0?Math.round(x*m.neg):x);
+  S.v=S.v.map((n,k)=>clamp(n+dd[k]));if(o.ok)S.pts++;
+  S.picks.push(i);S.phase='fb';timeline();
+  hud(`第 ${d.n} 週 · ${d.place}`,`你選了 ${i+1}`,o.ok?'符合 Kotter 的作法':'與 Kotter 的作法有差距','W'+d.n,`第 ${d.n} 週`);
+  show(`<div class="layout"><div class="panel">${meCard()}</div><div class="panel"><p class="eyebrow">結果</p><h2>${esc(o.t)}</h2>
+  <div class="delta">${dd.map((x,k)=>`<span class="${x>0?'up':x<0?'dn':'eq'}">${LAB[k]} ${x>0?'+':''}${x}</span>`).join('')}</div><p>${o.r}</p>
+  <div class="tip"><b>Kotter 管理重點</b><br>${d.opts.find(q=>q.ok).r}</div><div class="tip ask"><b>靈魂拷問</b><br>${d.ask}</div>
+  <button class="btn" id="n">${S.day<7?'回院長室，週末檢討 →':'查看 8 週結果 →'}</button></div></div>`);
+  Q('n').onclick=()=>S.day<7?nightScreen():endScreen();
+}
+function nightScreen(){
+  S.phase='night';const d=getD(S.day),o=d.opts[S.picks[S.day]];timeline();
+  const avg=Math.round(S.v.reduce((a,b)=>a+b)/3);
+  hud(`第 ${d.n} 週 · 院長室`,'週末檢討','整理本週所得','W'+d.n,`第 ${d.n} 週 週末`);
+  show(`<div class="layout"><div class="panel">${meCard()}</div><div class="panel"><p class="eyebrow">第 ${d.n} 週 · 週末</p><h2>Step ${d.n} ${d.step}</h2><p class="lead">${o.ok?'本週的選擇符合 Kotter 的作法。':'本週的選擇與 Kotter 的作法有差距，下週還有機會。'}三條狀態平均 <b style="color:var(--teal)">${avg}</b>。</p>
+  <p class="note">下週：${DAYS[S.day+1].place}，${DAYS[S.day+1].step}。</p>
+  <button class="btn" id="n">進入第 ${d.n+1} 週 →</button></div></div>`);
+  Q('n').onclick=()=>{S.day++;dayScreen()};
+}
+function endScreen(){
+  S.phase='end';timeline();
+  const avg=Math.round(S.v.reduce((a,b)=>a+b)/3);
+  const g=avg>=75?['變革已成為日常','八步驟多數到位，制度化程度高於多數情境。']:avg>=55?['變革正在推進','動能已建立，部分步驟仍有差距；留意持續推動與制度化。']:['變革尚未形成動能','多數選擇停留在命令或補救；從共識與排除障礙重新開始。'];
+  hud('第 8 週結束 · 松山分院','8 週結果',MODES[S.mode].name,'W8','第 8 週 結束');
+  show(`<div class="layout"><div class="panel">${meCard()}</div><div class="panel"><div class="grade"><p class="eyebrow">你的 8 週</p><div class="big">${g[0]}</div><p class="lead" style="margin-top:8px">共識 ${S.v[0]}　士氣 ${S.v[1]}　績效 ${S.v[2]}　平均 ${avg}</p><p class="lead">符合 Kotter 作法 ${S.pts} / 8</p><p class="note">${g[1]}</p></div>
+  <div class="recap">${DAYS.map((d,i)=>`<div><span class="k">${i+1}</span><span>${d.step}：${getD(i).opts[S.picks[i]].ok?'符合':'有差距'}</span></div>`).join('')}</div>
+  <div class="tip" style="margin-top:12px"><b>一句話帶走</b><br>營造迫切感與共識 → 掃除障礙、全員賦能 → 短期勝果樹立信心 → 融入組織文化。</div><p class="note">數值為示範設定，用於討論，非實際院務資料。</p>
+  <button class="btn" id="again">再玩一次</button><button class="btn ghost" id="sw">換一個版本</button></div></div>`);
+  Q('again').onclick=briefScreen;Q('sw').onclick=verScreen;
+}
+function start(data){
+  $('bgart').innerHTML=bgSVG();
+  if(data&&data.S)S=data.S;
+  const p=S.phase;
+  if(p==='brief'||p==='setup')briefScreen();else if(p==='day')dayScreen();else if(p==='fb'){S.phase='day';dayScreen()}else if(p==='night')nightScreen();else if(p==='end')endScreen();else verScreen();
+}
+window.claude?.hot?.snapshot?.(()=>({S}));
+window.claude?.hot?.ready?window.claude.hot.ready(start):start(window.claude?.hot?.data??{});
+</script>
+
+</body>
+</html>
