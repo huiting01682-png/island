@@ -301,8 +301,10 @@ const DAYS = [
 const LAB=['共識','士氣','績效'];
 // ---------- 結果回傳設定：Google 表單預填連結（由 Apps Script 產生後貼入；留空則只顯示複製按鈕） ----------
 const FORM={
-  base:'',   // 例：https://docs.google.com/forms/d/e/XXXX/viewform
-  entry:{name:'',unit:'',mode:'',q:['','','','','','','',''],v1:'',v2:'',v3:'',grade:'',code:''}
+  base:'https://docs.google.com/forms/d/e/1FAIpQLSdbt2o5Rk6cAC1iU3BVucvUOB7SMvGuM8j8GolfjaSsRjYIsg/viewform',
+  entry:{name:'entry.195115801',unit:'entry.1669940959',mode:'entry.1400583890',
+    q:['entry.675883479','entry.44817837','entry.212430061','entry.396678486','entry.985686173','entry.877698490','entry.1178486129','entry.785651864'],
+    v1:'entry.789489208',v2:'entry.374853462',v3:'entry.1833669886',grade:'entry.1982023657',code:'entry.362695819'}
 };
 function resultCode(){return `${S.mode==='lite'?'同仁':'Pro'}｜${S.picks.map(p=>p+1).join('-')}｜共識${S.v[0]} 士氣${S.v[1]} 績效${S.v[2]}｜符合${S.pts}/8`}
 function formURL(grade,unit,name){
