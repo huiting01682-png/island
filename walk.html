@@ -276,6 +276,7 @@ function choose(i){const d=getD(S.day),o=d.opts[i],m=MODES[S.mode];
  markDone(S.day,o.ok);
  setTimeout(()=>$('#after').scrollIntoView({behavior:'smooth',block:'start'}),120);
  $('#nx').onclick=()=>{if(S.day<7){S.day++;weekCard()}else endScreen()};}
+function advice(){const k=S.v.indexOf(Math.min(...S.v));const P=[['共識','回到 Step 1–3：用數據與病人經驗說明改變的必要，確認跨部門團隊與一年目標。'],['士氣','優先 Step 4–5：到現場聽第一線意見，先排除重複登錄等制度障礙，不再要求加倍努力。'],['績效','聚焦 Step 6–7：選兩個病房試辦並公開短期成果，再逐步擴展、定期檢討未達標原因。']];const L=[['共識','在單位晨會用真實個案說明為什麼要改，邀同事一起提出改善點。'],['士氣','把同事最想刪掉的重複步驟記錄下來，量化後交給變革小組處理。'],['績效','爭取單位參加試辦，記錄改善前後數據，並公開分享作法。']];const a=(S.mode==='pro'?P:L)[k];return `<div class="tip" style="margin-top:12px"><b>${S.mode==='pro'?'給院長的決策建議':'給變革種子的下一步'}</b><br>三條狀態中「${a[0]}」最低（${S.v[k]}）。${a[1]}</div>`}
 function resultCode(){return `${S.mode==='lite'?'同仁':'Pro'}｜${S.picks.map(p=>p+1).join('-')}｜共識${S.v[0]} 士氣${S.v[1]} 績效${S.v[2]}｜符合${S.pts}/8`}
 function formURL(grade,unit,name){if(!FORM.base)return'';const p=new URLSearchParams({usp:'pp_url'});const put=(k,v)=>{if(k&&v!==undefined)p.append(k,String(v))};
  put(FORM.entry.name,name);put(FORM.entry.unit,unit);put(FORM.entry.mode,MODES[S.mode].name+'（小島版）');S.picks.forEach((pk,i)=>put(FORM.entry.q[i],pk+1));
@@ -285,7 +286,7 @@ function endScreen(){S.phase='end';const avg=Math.round(S.v.reduce((a,b)=>a+b)/3
  openSheet(`<div class="grade"><p class="muted" style="margin:0">你的 8 週 · ${MODES[S.mode].name}</p><div class="big2">${g[0]}</div>
  <p style="margin:6px 0 0">共識 ${S.v[0]}　士氣 ${S.v[1]}　績效 ${S.v[2]}　平均 <b>${avg}</b></p><p style="margin:0">符合 Kotter 作法 <b>${S.pts} / 8</b></p><p class="muted" style="margin:4px 0 0">${g[1]}</p></div>
  <div class="recap">${DAYS.map((d,i)=>{const ok=getD(i).opts[S.picks[i]].ok;return `<div><b>${i+1}</b> ${d.step}　<span class="${ok?'ok':'no'}">${ok?'符合':'有差距'}</span></div>`}).join('')}</div>
- <div class="tip"><b>本案第一性原理拆解</b><br>傳統假設：床不夠、同仁不夠努力 → 只好加床加班<br>元事實：床在，但周轉慢；病床資料三處重複登錄、釋出責任不清<br>重構：單一登錄、明定釋出責任，先兩病房試辦（最小可行方案）<br>結果：周轉 6 → 3.5 小時（假設值）<br><b>一句話：要改的是流程，不是努力程度。</b></div><div class="tip"><b>一句話帶走</b><br>看見改變的必要 → 理解方向 → 願意參與 → 看見成果 → 讓改變成為習慣。</div>
+ ${advice()}<div class="tip"><b>本案第一性原理拆解</b><br>傳統假設：床不夠、同仁不夠努力 → 只好加床加班<br>元事實：床在，但周轉慢；病床資料三處重複登錄、釋出責任不清<br>重構：單一登錄、明定釋出責任，先兩病房試辦（最小可行方案）<br>結果：周轉 6 → 3.5 小時（假設值）<br><b>一句話：要改的是流程，不是努力程度。</b></div><div class="tip"><b>一句話帶走</b><br>看見改變的必要 → 理解方向 → 願意參與 → 看見成果 → 讓改變成為習慣。</div>
  <div class="card"><h3>回傳結果，協助院內統整</h3><div class="g2"><div class="field"><label for="pname">姓名（必填）</label><input id="pname" maxlength="20" placeholder="請輸入姓名"></div><div class="field"><label for="unit">單位（必填）</label><input id="unit" maxlength="20" placeholder="例：7A 病房"></div></div>
  <code id="code">${resultCode()}</code>
  ${FORM.base?'<button class="big orange" id="send">回傳表單 →</button>':''}<button class="big ghost" id="copy">複製結果</button>
