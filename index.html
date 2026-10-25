@@ -272,7 +272,7 @@ const DAYS = [
    {t:'整合為單一登錄並自動同步，明定病床釋出責任、簡化程序，補足訓練。', d:[+8,+14,+8], r:'移除制度性障礙，是管理者最重要的工作之一。', ok:true}]},
  {n:6,place:'試辦病房', time:'11:00', step:'創造短期成果', en:'Generate Short-Term Wins', who:'試辦病房護理長',
   ask:'改革願景是遙不可及的大餅，還是三個月就讓員工有感的早期勝利？',
-  lite:{who:'護理長', say:'試辦三個月，病房清床時間從 6 小時降到 3.5 小時。院務會議要你上台分享。你會？', opts:[{t:'謙虛地說：「運氣好，病人比較單純。」', d:[-2,-3,3], r:'把成果歸於運氣，其他單位看不見可複製的作法。', ok:false},{t:'分享具體作法與數據，並點名每一位參與的同事。', d:[10,12,8], r:'短期成果公開、歸功團隊，建立信任並降低其他單位的抗拒。', ok:true},{t:'盡量少講，怕之後被要求更多。', d:[-4,-4,2], r:'成果看不見，動能無法擴散。', ok:false}]},
+  lite:{who:'護理長', say:'試辦三個月，病床周轉時間從 6 小時降到 3.5 小時。院務會議要你上台分享。你會？', opts:[{t:'謙虛地說：「運氣好，病人比較單純。」', d:[-2,-3,3], r:'把成果歸於運氣，其他單位看不見可複製的作法。', ok:false},{t:'分享具體作法與數據，並點名每一位參與的同事。', d:[10,12,8], r:'短期成果公開、歸功團隊，建立信任並降低其他單位的抗拒。', ok:true},{t:'盡量少講，怕之後被要求更多。', d:[-4,-4,2], r:'成果看不見，動能無法擴散。', ok:false}]},
   say:'兩個病房試辦三個月，周轉時間從 6 小時降到 3.5 小時。接下來？',
   pro:'（Pro）另一個未試辦的病房主任在群組說：「他們病人比較單純，當然快。」',
   opts:[
@@ -283,7 +283,7 @@ const DAYS = [
   ask:'局部試辦見好就收，還是乘勝追擊、徹底終結舊模式？',
   lite:{who:'鄰近病房護理師', say:'鄰近病房的同事說：「你們病人比較單純，當然快；我們做不到。」', opts:[{t:'不理會，自己單位做好就好。', d:[-3,-2,0], r:'改革停在一個單位，整體績效不會改善。', ok:false},{t:'邀請他們來觀摩一個早上，再一起調整適合他們病房的版本。', d:[10,6,10], r:'用短期成功的動能帶動其他單位，並允許因地調整。', ok:true},{t:'向主管投訴該病房不配合。', d:[-4,-8,1], r:'究責取代協助，其他單位轉為隱藏問題。', ok:false}]},
   say:'試辦成功後，半年來有兩個單位又回到舊流程。您會怎麼做？',
-  pro:'（Pro）其中一個單位的主任是院內最資深的主治醫師。',
+  pro:'（Pro）其中一個單位認為新流程不適合該科病人特性。',
   opts:[
    {t:'初步成功就夠了，專案結案。', d:[-8,-5,-10], r:'成功一點就停止，單位逐漸回到原本工作模式。', ok:false},
    {t:'逐步擴展到所有病房，並延伸到出院準備、住院安排、跨科會診；持續追蹤各單位績效、定期檢討未達標原因。', d:[+10,+6,+14], r:'用短期成功的動能推動更大範圍的制度改革。', ok:true},
@@ -292,7 +292,7 @@ const DAYS = [
   ask:'如果今天專案主管換人，這個制度還能自動運作嗎？',
   lite:{who:'新進同仁', say:'新進護理師報到，問你病床釋出與交班怎麼做。你會？', opts:[{t:'「先照舊的做，熟了再說。」', d:[-5,0,-8], r:'新人學到舊流程，制度在交接中流失。', ok:false},{t:'用 SOP 與檢核表帶新人，並告訴他改善建議要往哪裡提。', d:[10,8,10], r:'把新流程寫進新人訓練與日常，變革才會留下來。', ok:true},{t:'口頭講一下，有問題再問。', d:[0,-2,-3], r:'沒有制度化的傳承，習慣慢慢回去。', ok:false}]},
   say:'評鑑通過了。新流程要怎麼留下來，不靠院長每天督促？',
-  pro:'（Pro）您明年可能調任，接任者尚未確定。',
+  pro:'（Pro）明年度主管職務例行輪調，多個單位主管可能更換。',
   opts:[
    {t:'召開慶功會，專案小組解散，等下次評鑑前再動員。', d:[-6,+2,-12], r:'評鑑前兩個月全院動員，不是變革，成果隨主管更換消失。', ok:false},
    {t:'納入 SOP、新人教育訓練、主管績效指標與定期品質檢討，讓跨部門協調與持續改善成為日常。', d:[+12,+8,+12], r:'制度化：即使主管更換，制度仍能運作。這就是評鑑日常化。', ok:true},
@@ -410,11 +410,11 @@ function endScreen(){
   hud('第 8 週結束 · 松山分院','8 週結果',MODES[S.mode].name,'W8','第 8 週 結束');
   show(`<div class="layout"><div class="panel">${meCard()}</div><div class="panel"><div class="grade"><p class="eyebrow">你的 8 週</p><div class="big">${g[0]}</div><p class="lead" style="margin-top:8px">共識 ${S.v[0]}　士氣 ${S.v[1]}　績效 ${S.v[2]}　平均 ${avg}</p><p class="lead">符合 Kotter 作法 ${S.pts} / 8</p><p class="note">${g[1]}</p></div>
   <div class="recap">${DAYS.map((d,i)=>`<div><span class="k">${i+1}</span><span>${d.step}：${getD(i).opts[S.picks[i]].ok?'符合':'有差距'}</span></div>`).join('')}</div>
-  <div class="tip" style="margin-top:12px"><b>一句話帶走</b><br>營造迫切感與共識 → 掃除障礙、全員賦能 → 短期勝果樹立信心 → 融入組織文化。</div><p class="note">數值為示範設定，用於討論，非實際院務資料。</p>
+  <div class="tip" style="margin-top:12px"><b>一句話帶走</b><br>看見改變的必要 → 理解方向 → 願意參與 → 看見成果 → 讓改變成為習慣。</div><p class="note">數值為示範設定，用於討論，非實際院務資料。</p>
   <div class="panel" style="margin-top:12px;background:var(--panel2)"><h3>回傳結果，協助院內統整</h3>
   <div class="grid2"><div class="field"><label for="pname">姓名（必填）</label><input type="text" id="pname" maxlength="20" placeholder="請輸入姓名"></div><div class="field"><label for="unit">單位（必填）</label><input type="text" id="unit" maxlength="20" placeholder="例：7A 病房"></div></div>
   <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><code id="code" style="font-size:16px;background:#0E161E;border:1px solid var(--line2);border-radius:8px;padding:8px 10px;flex:1;min-width:0;word-break:break-all">${resultCode()}</code><button class="btn" id="copy" style="width:auto;margin:0;padding:10px 16px;font-size:18px">複製結果</button></div>
-  <p class="note" style="text-align:left">${FORM.base?'按「回傳表單」會開啟已預填的 Google 表單，確認後按提交即可。':'填姓名與單位後複製，貼到 LINE 群組給品管中心即可。'}</p>
+  <p class="note" style="text-align:left">${FORM.base?'按「回傳表單」會開啟已預填的 Google 表單，確認後按提交即可。':'填姓名與單位後複製，貼到 LINE 群組給醫品中心即可。'}</p>
   ${FORM.base?'<button class="btn" id="send">回傳表單 →</button>':''}</div>
   <button class="btn ghost" id="again">再玩一次</button><button class="btn ghost" id="sw">換一個版本</button></div></div>`);
   Q('again').onclick=briefScreen;Q('sw').onclick=verScreen;
