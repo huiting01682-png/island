@@ -47,6 +47,7 @@ p{margin:0}
 .lead{color:var(--sub);font-size:17px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media (max-width:640px){.grid2{grid-template-columns:1fr}}
+.styles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.sty{display:block;border-radius:12px;padding:10px 14px;font-weight:800;font-size:19px;text-decoration:none;color:var(--fg);border:1px solid var(--line2);background:var(--panel2)}.sty small{display:block;font-weight:400;font-size:15px;opacity:.75}.sty.on{border-color:var(--teal);box-shadow:inset 0 0 0 1px var(--teal)}a.sty{background:linear-gradient(135deg,#2E7FE0,#5DB7FF);color:#fff;border:0}
 .vcard{background:var(--panel2);border:1px solid var(--line2);border-radius:14px;padding:14px;display:flex;gap:14px;align-items:stretch;cursor:pointer;text-align:left;color:var(--fg);font:inherit;width:100%}
 .vcard:hover,.vcard:focus-visible{border-color:var(--teal);outline:none}
 .vcard .por{width:120px;flex:none;border-radius:10px;overflow:hidden;background:#0E1A22;border:1px solid var(--line2)}
@@ -349,6 +350,7 @@ function meCard(){
 function verScreen(){
   S.phase='ver';timeline();hud('經營島 · 三軍總醫院松山分院','選一個版本','8 週，推動一次醫院變革','W0','尚未開始');
   show(`<div class="panel"><p class="eyebrow">KOTTER 變革八步驟 · 互動模擬</p><h2>選一個版本</h2><p class="lead">接下來 8 週，整間醫院的變革由你帶。核心理念：讓改變從「管理者要求」變成「員工的日常習慣」。</p>
+  <div class="styles"><span class="sty on">🎬 電影劇情版<small>目前樣式 · 圖文情境</small></span><a class="sty" href="https://huiting01682-png.github.io/island/walk.html">🏝️ 小島走走版 →<small>3D 小島 · 小人跑來跑去</small></a></div>
   <div class="grid2" style="margin-top:14px">
     <button class="vcard" id="vLite"><div class="por">${porHTML('f')}</div><div style="display:flex;flex-direction:column;min-width:0"><span class="tag">全院同仁 · 不需管理背景</span><h3>同仁體驗版</h3><p>你是單位的變革種子。8 個情境、每題三選一；玩完你會知道，一次變革第一線要過哪八關。</p><div class="go">開始體驗 →</div></div></button>
     <button class="vcard" id="vPro"><div class="por">${porHTML('m')}</div><div style="display:flex;flex-direction:column;min-width:0"><span class="tag">各級主管 · 決策視角</span><h3>主管 Pro 版</h3><p>你以院長視角做 8 個決策。起始狀態較低、錯誤選擇扣分較重，每週多一條現實變數（預算、人力、人事）。</p><div class="go">進入 Pro 版 →</div></div></button>

@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>經營島 · 小島走走版</title>
+<meta name="description" content="Kotter 變革八步驟 3D 小島闖關：8 週、8 個地點、8 個決定">
+<meta name="theme-color" content="#2E7FE0">
+<style>
+:root{--bg:#FFF7EA;--surface:#FFFFFF;--surface-2:#FFF1DA;--ink:#123A73;--text:#2B2F3A;--muted:#5D6472;--line:#F0DEC2;--primary:#1F6FD1;--ok:#14866D;--ok-soft:#DDF5EC;--alert:#D6334B;--alert-soft:#FFE8EB;--warn:#B86E00;--warn-soft:#FFF0D2;--teal:#12887A;--sky1:#5DB7FF;--sky2:#2E7FE0;
+ --font:"PingFang TC","Microsoft JhengHei","Noto Sans TC","Heiti TC",system-ui,sans-serif}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden}
+body{background:#9FD8FF;color:var(--text);font-family:var(--font);font-size:20px;line-height:1.6}
+button,input{font:inherit;color:inherit}
+#world{position:fixed;inset:0;display:block;width:100vw;height:100vh;touch-action:none}
+#labels{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.lb{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font-weight:800;pointer-events:none}
+.lb.bld{background:rgba(255,255,255,.94);color:#123A73;border-radius:12px;padding:2px 10px;font-size:16px;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.lb.bld i{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#123A73;color:#fff;font-size:13px;margin-right:6px;vertical-align:1px}
+.lb.bld.now{background:#FFB020;color:#4A2A00}.lb.bld.now i{background:#4A2A00}
+.lb.bld.done{background:#DDF5EC;color:#14866D}.lb.bld.done i{background:#14866D}
+.lb.nm{color:#fff;font-size:14px;text-shadow:0 1px 3px rgba(0,0,0,.85)}
+.lb.bang{width:38px;height:38px;border-radius:50%;background:#FFB020;color:#5A3300;font-size:24px;display:grid;place-items:center;border:3px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.3);animation:bob 1s ease-in-out infinite}
+.lb.say{background:#fff;color:#2B2F3A;border-radius:14px;padding:6px 12px;font-size:16px;font-weight:700;max-width:230px;white-space:normal;box-shadow:0 3px 10px rgba(0,0,0,.25);animation:popin .25s ease-out}
+.lb.say::after{content:"";position:absolute;left:50%;bottom:-8px;margin-left:-8px;border:8px solid transparent;border-bottom:0;border-top-color:#fff}
+@keyframes bob{50%{transform:translate(-50%,-115%)}}@keyframes popin{from{opacity:0;transform:translate(-50%,-80%) scale(.8)}}
+#arrow{position:fixed;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;background:#FFB020;border:3px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.3);display:none;place-items:center;pointer-events:none;z-index:4}
+#arrow i{display:block;width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-bottom:18px solid #5A3300}
+#arrow b{position:absolute;top:56px;left:50%;transform:translateX(-50%);white-space:nowrap;background:rgba(18,58,115,.9);color:#fff;font-size:15px;border-radius:10px;padding:1px 8px}
+.hud{position:fixed;left:0;right:0;top:0;z-index:5;background:linear-gradient(180deg,var(--sky1),var(--sky2));color:#fff;padding:calc(env(safe-area-inset-top) + 8px) 14px 10px;box-shadow:0 4px 16px rgba(18,58,115,.25)}
+.hrow{display:flex;align-items:center;gap:8px;max-width:720px;margin:0 auto}
+.pill{background:#fff;color:#1F6FD1;font-weight:800;border-radius:999px;padding:3px 12px;font-size:17px;white-space:nowrap}
+.when{font-weight:800;font-size:17px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.score{background:#FFE6A8;color:#7A4A00;border-radius:999px;padding:1px 10px;font-size:16px;font-weight:800;white-space:nowrap}
+.bars{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:720px;margin:8px auto 0}
+.bar{font-size:16px;font-weight:800;position:relative}
+.bar .tr{height:12px;border-radius:8px;background:rgba(255,255,255,.35);overflow:hidden;margin-top:2px}
+.bar .tr i{display:block;height:100%;border-radius:8px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.bar.a i{background:#FFC24D}.bar.b i{background:#FF8FA0}.bar.c i{background:#7EE0B8}
+.bar b{float:right}
+.fx{position:absolute;right:0;top:-6px;font-size:16px;font-weight:900;background:#fff;border-radius:10px;padding:0 8px;animation:fx 1.8s forwards;pointer-events:none}
+.fx.up{color:var(--ok)}.fx.dn{color:var(--alert)}
+@keyframes fx{0%{opacity:0;transform:translateY(6px)}15%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0;transform:translateY(-14px)}}
+.task{max-width:720px;margin:8px auto 0;display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.96);color:#123A73;border-radius:14px;padding:6px 12px;font-size:17px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.task span{flex:1;min-width:0}
+#hint{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));transform:translateX(-50%);background:rgba(18,58,115,.88);color:#fff;border-radius:999px;padding:6px 16px;font-size:16px;z-index:3;pointer-events:none;transition:opacity .6s;white-space:nowrap}
+#act{position:fixed;left:50%;bottom:calc(22px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:4;min-height:60px;padding:0 28px;border-radius:999px;border:4px solid #fff;background:#FF9F1C;color:#fff;font-size:21px;font-weight:900;box-shadow:0 5px 0 #C46F00,0 10px 24px rgba(0,0,0,.25);display:none;cursor:pointer;white-space:nowrap;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{transform:translateX(-50%) scale(1.05)}}
+#dim{position:fixed;inset:0;background:rgba(10,20,40,.35);z-index:6;opacity:0;pointer-events:none;transition:opacity .4s}
+#dim.on{opacity:1;pointer-events:auto}
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:7;max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;background:var(--bg);border-radius:26px 26px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.35);transform:translateY(105%);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+#sheet.open{transform:none}
+#sheet.full{top:0;max-height:none;border-radius:0}
+#sheet .grab{width:48px;height:5px;border-radius:3px;background:var(--line);margin:10px auto 0}
+main{max-width:720px;margin:0 auto;padding:16px 16px calc(34px + env(safe-area-inset-bottom))}
+h1{font-size:40px;line-height:1.2;color:var(--ink);margin:8px 0 2px;text-align:center;font-weight:900}
+h2{font-size:28px;line-height:1.3;color:var(--ink);margin:6px 0;font-weight:900}
+h3{font-size:22px;color:var(--ink);margin:4px 0;font-weight:900}
+.sub{color:#E8590C;font-weight:900;text-align:center;font-size:20px;margin:0}
+.card{background:var(--surface);border-radius:20px;padding:14px 16px;margin-top:12px;box-shadow:0 2px 0 rgba(18,58,115,.06),0 10px 24px -8px rgba(18,58,115,.22)}
+.muted{color:var(--muted);font-size:17px}
+.note{color:var(--muted);font-size:16px;text-align:center;margin:12px 0 0}
+.hero{border-radius:22px;overflow:hidden;background:linear-gradient(160deg,#5DB7FF,#2E7FE0);height:150px;display:grid;place-items:center;color:#fff;font-size:64px;box-shadow:0 10px 24px -8px rgba(18,58,115,.35)}
+.vcard{display:flex;gap:12px;align-items:center;width:100%;text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:20px;padding:14px;margin-top:12px;cursor:pointer;box-shadow:0 3px 0 var(--line)}
+.vcard:active{transform:translateY(2px);box-shadow:none}
+.vcard .av{flex:none;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;font-size:34px}
+.vcard .tag{display:inline-block;font-size:15px;font-weight:800;border-radius:999px;padding:0 10px}
+.vcard h3{margin:2px 0}.vcard p{margin:0;font-size:17px;color:var(--muted);line-height:1.5}
+.row{display:grid;grid-template-columns:5.5em 1fr;gap:8px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:18px}
+.row:last-child{border:0}.row b{color:var(--ink)}.row small{display:block;color:var(--muted);font-size:15px}
+.rules div{padding:6px 0;font-size:18px}.rules b{color:var(--teal)}
+.big{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:60px;margin-top:16px;border-radius:999px;border:0;background:var(--primary);color:#fff;font-size:21px;font-weight:900;cursor:pointer;box-shadow:0 4px 0 #1553A3;text-decoration:none}
+.big.ghost{background:var(--surface);color:var(--primary);border:2px solid var(--line);box-shadow:0 3px 0 var(--line)}
+.big.orange{background:#FF9F1C;box-shadow:0 4px 0 #C46F00}
+.wk{text-align:center;padding-top:6px}
+.wk .n{font-size:52px;font-weight:900;color:var(--primary);line-height:1.1}
+.wk .st{font-size:24px;font-weight:900;color:var(--ink)}
+.wk .en{font-size:16px;color:var(--muted)}
+.dots{display:flex;justify-content:center;gap:8px;margin:12px 0 4px}
+.dots span{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:16px;font-weight:900;background:var(--surface-2);color:#B08A5A}
+.dots span.ok{background:var(--ok-soft);color:var(--ok)}.dots span.on{background:var(--primary);color:#fff}
+.who{display:flex;gap:12px;align-items:flex-start}
+.face{flex:none;width:56px;height:56px;border-radius:50%;background:#123A73;color:#fff;display:grid;place-items:center;font-weight:900;font-size:18px}
+.who small{display:block;color:var(--muted);font-size:15px}
+.q{font-size:20px;font-weight:700;color:var(--text)}
+.event{margin-top:10px;background:var(--warn-soft);border-left:5px solid var(--warn);border-radius:12px;padding:8px 12px;font-size:18px}
+.event b{color:var(--warn)}
+.opt{display:flex;gap:10px;width:100%;text-align:left;margin:12px 0 0;padding:14px 16px;border-radius:16px;border:2px solid var(--line);background:var(--surface);font-size:19px;font-weight:600;cursor:pointer;min-height:58px;box-shadow:0 3px 0 var(--line)}
+.opt .k{flex:none;width:30px;height:30px;border-radius:50%;background:var(--surface-2);color:var(--ink);display:grid;place-items:center;font-weight:900;font-size:16px}
+.opt:active{transform:translateY(2px);box-shadow:none}
+.opt.good{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.opt.bad{background:var(--alert-soft);border-color:var(--alert);color:var(--alert)}
+.opt.dim{opacity:.45}.opt:disabled{cursor:default}
+.res{margin-top:14px;border-radius:16px;padding:12px 14px;font-size:18px}
+.res.ok{background:var(--ok-soft)}.res.no{background:var(--alert-soft)}
+.res h3{margin:0 0 4px}.res.ok h3{color:var(--ok)}.res.no h3{color:var(--alert)}
+.delta{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0}
+.delta span{border-radius:999px;padding:0 10px;font-weight:900;font-size:16px;background:#fff}
+.delta .up{color:var(--ok)}.delta .dn{color:var(--alert)}.delta .eq{color:var(--muted)}
+.tip{margin-top:10px;background:var(--surface);border-radius:14px;padding:10px 14px;font-size:18px;border-left:5px solid var(--teal)}
+.tip b{color:var(--teal)}.tip.ask{border-color:#C00000}.tip.ask b{color:#C00000}
+.grade{text-align:center}.grade .big2{font-size:34px;font-weight:900;color:var(--primary);line-height:1.25}
+.recap{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.recap div{background:var(--surface);border-radius:12px;padding:6px 10px;font-size:16px}
+.recap .ok{color:var(--ok)}.recap .no{color:var(--alert)}
+.field label{display:block;font-size:16px;font-weight:800;color:var(--ink)}
+.field input{width:100%;border:2px solid var(--line);border-radius:12px;padding:8px 12px;font-size:19px;background:#fff;margin-top:2px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+code{display:block;font-size:15px;background:var(--surface-2);border-radius:10px;padding:8px 10px;margin-top:10px;word-break:break-all}
+#fallback{display:none;position:fixed;inset:0;background:var(--bg);z-index:9;padding:40px 24px;text-align:center;font-size:20px}
+@media (max-width:380px){h1{font-size:34px}.g2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<canvas id="world"></canvas>
+<div id="labels"></div>
+<div id="arrow"><i></i><b></b></div>
+<header class="hud" id="hud" hidden>
+ <div class="hrow"><span class="pill" id="wkp"></span><span class="when" id="wkt"></span><span class="score" id="sc"></span></div>
+ <div class="bars" id="bars"></div>
+ <div class="task" id="task"><span id="taskTxt"></span></div>
+</header>
+<div id="hint">點地面走路；走到發光的人旁邊就能對話</div>
+<button id="act" type="button"></button>
+<div id="dim"></div>
+<div id="sheet" aria-live="polite"><div class="grab"></div><main id="stage"></main></div>
+<div id="fallback">這支手機的瀏覽器無法顯示 3D 畫面。<br><br><a class="big" href="index.html">改玩電影劇情版</a></div>
+<script src="vendor/three.min.js"></script>
+<script>
+"use strict";
+const DAYS = [
+ {n:1,place:'主管會議室', time:'08:30', step:'建立危機意識', en:'Create a Sense of Urgency', who:'醫療部主任',
+  ask:'你是在製造恐懼，還是用真實數據建立共同的使命？',
+  lite:{who:'單位主管', say:'晨會上，單位主管轉達院長在主管會議提出的數據：急診待床 18 小時、病床周轉 6 小時。有同事小聲說：「那是急診的事。」你會怎麼接？', opts:[{t:'「對啊，跟我們病房無關，先把自己的事做好。」', d:[-5,0,-2], r:'把問題切割給別的單位，危機意識無法在單位內形成。', ok:false},{t:'「上週那位在急診等了一整晚才上來的病人，我們接手時也很累。流程卡在哪裡，我們最清楚。」', d:[12,6,2], r:'用自己單位的真實經驗說出必要性，同事才會覺得這件事與自己有關。', ok:true},{t:'「等上面定案再說，現在講也沒用。」', d:[-3,-2,-2], r:'等待決策，迫切性隨時間消失。', ok:false}]},
+  say:'院長，急診待床平均 18 小時、病床周轉 6 小時，病人抱怨這季又增加了。主管會議您打算怎麼開場？',
+  pro:'（Pro）會議前，急診主任私下提醒：有兩位資深主治認為「這是急診自己的問題」。',
+  opts:[
+   {t:'「再這樣下去會被衛生局處分，各單位限期改善。」', d:[+5,-12,+3], r:'用處分施壓，短期有動作，長期增加防衛與觀望。', ok:false},
+   {t:'「同仁很努力，但流程讓病人等太久，也讓第一線更累。要改的是流程，不是努力程度。」', d:[+15,+8,+2], r:'以數據、病人經驗與共同使命建立迫切性，不製造恐懼。', ok:true},
+   {t:'「先成立委員會研議，下一季再討論。」', d:[-5,0,-3], r:'延後處理，迫切性隨時間消失。', ok:false}]},
+ {n:2,place:'院長室', time:'10:00', step:'組成變革領導團隊', en:'Build a Guiding Coalition', who:'副院長',
+  ask:'你的變革團隊只是開會的委員會，還是有協調資源與排除障礙權力的決策核心？',
+  lite:{who:'單位主管', say:'單位主管問：院方要成立跨部門的病床管理小組，每個單位要一位變革種子。誰願意？', opts:[{t:'推給最資深的學姐，她比較懂。', d:[0,-3,0], r:'只靠資深者，單位其他人仍是旁觀者。', ok:false},{t:'自願參加，並找一位白班、一位夜班同事一起，讓三班都有人能回饋。', d:[10,6,3], r:'變革團隊要有第一線的聲音，而且要能把訊息帶回單位。', ok:true},{t:'參加，但只去開會、不把討論帶回單位。', d:[2,-2,0], r:'有名無實的代表，單位仍不知道改革在做什麼。', ok:false}]},
+  say:'改革要有人帶。您想怎麼組這個團隊？',
+  pro:'（Pro）通資組同時有 HIS 升級案在跑，護理部主任同時兼評鑑窗口。',
+  opts:[
+   {t:'由我親自主持，各單位主管每週來報告。', d:[+3,-5,+2], r:'只靠院長推動，單點決策，主管更換就停。', ok:false},
+   {t:'交給醫品中心承辦，寫成專案計畫書即可。', d:[0,-3,0], r:'單一部門無法協調跨部門資源與權責。', ok:false},
+   {t:'由副院長召集，護理部、急診、臨床科、通資組、醫品中心、人資行政組都進來，指定專案負責人。', d:[+12,+6,+4], r:'跨部門、有決策力與影響力的領導團隊，能協調資源與排除障礙。', ok:true}]},
+ {n:3,place:'策略工作坊', time:'13:30', step:'建立策略願景', en:'Form a Strategic Vision', who:'專案負責人',
+  ask:'員工看到的是冰冷的 KPI，還是值得追隨的清晰未來？',
+  lite:{who:'專案負責人', say:'小組請每個單位寫出「理想的住院流程長什麼樣」，下週工作坊討論。你會怎麼寫？', opts:[{t:'直接抄另一家醫院的 SOP 交出去。', d:[2,-4,1], r:'未依本院病人組成與資源調整，同事認為不切實際。', ok:false},{t:'用病房的真實案例描述理想狀況，並提出可量的目標，例如出院到清床完成的時間。', d:[10,5,5], r:'願景要清楚、可轉成具體目標，第一線的描述最能說服人。', ok:true},{t:'寫「盡力而為、持續改善」交差。', d:[-3,0,-4], r:'沒有可衡量目標，改革無法判斷是否有效。', ok:false}]},
+  say:'團隊問：我們到底要把醫院變成什麼樣子？目標要怎麼訂？',
+  pro:'（Pro）總院希望本院一年內待床時間降到 8 小時以下，本院基準值是 18 小時。',
+  opts:[
+   {t:'願景：以病人為中心、即時透明、高效率且安全的智慧住院流程；一年目標依本院基準值設定、每季衡量。', d:[+10,+5,+6], r:'願景清楚、可轉成具體目標；數值依基準值設定，KPI 衡量成敗。', ok:true},
+   {t:'先不訂數字，做了再說。', d:[-4,+2,-5], r:'沒有可衡量目標，無法判斷改革是否有效。', ok:false},
+   {t:'直接套用醫學中心的指標目標值。', d:[+2,-6,+1], r:'未依病人組成與資源條件調整，第一線認為不切實際。', ok:false}]},
+ {n:4,place:'護理站', time:'15:00', step:'凝聚支持與參與', en:'Enlist a Volunteer Army', who:'病房護理長',
+  ask:'你的溝通是單向的政策佈達，還是讓員工從「要我改」變成「我願意」？',
+  lite:{who:'同事', say:'交班後，同事抱怨：「又來一個新專案，是不是又要多填一堆表？」', opts:[{t:'跟著一起抱怨：「對啊，上面都不懂我們多忙。」', d:[-6,-4,0], r:'情緒被同理了，但改革被定調為增加工作。', ok:false},{t:'說明目的是減少重複作業、把時間還給病人；再問同事最想砍掉哪個步驟，帶回小組。', d:[12,10,2], r:'從「主管要我改」變成「我願意參與改」，參與感來自被詢問。', ok:true},{t:'說：「上面規定的，沒辦法。」', d:[1,-6,0], r:'由上而下的語言，讓同事更覺得自己只是被要求的人。', ok:false}]},
+  say:'護理站同仁說：「又是一個新專案，是不是又要多填一堆表？」',
+  pro:'（Pro）護理離職率本季上升，三個病房人力缺口 12%。',
+  opts:[
+   {t:'發公文說明政策，要求各單位配合。', d:[+2,-8,0], r:'由上而下，員工仍把改革理解成增加工作。', ok:false},
+   {t:'到科部會議與護理站說明：目的是減少重複作業，把時間還給病人；邀請各單位提改善建議，培養單位推動者。', d:[+14,+12,+3], r:'從「主管要我改」變成「我願意參與改」。', ok:true},
+   {t:'辦一次全院宣導影片，線上簽到即可。', d:[+4,-2,0], r:'單向宣導，沒有對話與參與。', ok:false}]},
+ {n:5,place:'通資組', time:'09:00', step:'排除改革障礙', en:'Enable Action by Removing Barriers', who:'通資組組長',
+  ask:'進度卡關時，你在指責員工不夠努力，還是捲起袖子搬開水面下的石頭？',
+  lite:{who:'通資組同仁', say:'病床資料要在紙本、Excel、HIS 各登一次，每天多花半小時。你會怎麼做？', opts:[{t:'自己加班補登，不要讓單位被記缺失。', d:[-2,-8,1], r:'用個人努力吸收制度缺陷，障礙仍在、士氣下降。', ok:false},{t:'記錄一週重複登錄的次數與耗時，提交小組，要求整合為單一登錄並明定病床釋出責任。', d:[8,10,6], r:'把障礙量化、提到能排除障礙的層級，是第一線最有力的作法。', ok:true},{t:'偶爾漏登，反正沒有人查。', d:[-5,-2,-4], r:'資料不完整，整合系統時反而更難。', ok:false}]},
+  say:'護理站反映：病床資料要在紙本、Excel、HIS 各登一次，排擠照護時間。',
+  pro:'（Pro）HIS 廠商報價整合費用 180 萬，本年度資訊預算只剩 60 萬。',
+  opts:[
+   {t:'請護理長加強督導，確保三處都登錄完整。', d:[-6,-12,+1], r:'要求更努力，障礙仍在，士氣下降。', ok:false},
+   {t:'增加一名行政助理協助登錄。', d:[+1,+3,+2], r:'用人力補流程缺口，成本持續、根因未除。', ok:false},
+   {t:'整合為單一登錄並自動同步，明定病床釋出責任、簡化程序，補足訓練。', d:[+8,+14,+8], r:'移除制度性障礙，是管理者最重要的工作之一。', ok:true}]},
+ {n:6,place:'試辦病房', time:'11:00', step:'創造短期成果', en:'Generate Short-Term Wins', who:'試辦病房護理長',
+  ask:'改革願景是遙不可及的大餅，還是三個月就讓員工有感的早期勝利？',
+  lite:{who:'護理長', say:'試辦三個月，病床周轉時間從 6 小時降到 3.5 小時。院務會議要你上台分享。你會？', opts:[{t:'謙虛地說：「運氣好，病人比較單純。」', d:[-2,-3,3], r:'把成果歸於運氣，其他單位看不見可複製的作法。', ok:false},{t:'分享具體作法與數據，並點名每一位參與的同事。', d:[10,12,8], r:'短期成果公開、歸功團隊，建立信任並降低其他單位的抗拒。', ok:true},{t:'盡量少講，怕之後被要求更多。', d:[-4,-4,2], r:'成果看不見，動能無法擴散。', ok:false}]},
+  say:'兩個病房試辦三個月，周轉時間從 6 小時降到 3.5 小時。接下來？',
+  pro:'（Pro）另一個未試辦的病房主任在群組說：「他們病人比較單純，當然快。」',
+  opts:[
+   {t:'公開表揚參與團隊，在院務會議分享數據與作法，讓其他單位看見效益。', d:[+10,+14,+10], r:'短期成果建立信任、提升士氣、降低其他單位的抗拒。', ok:true},
+   {t:'數據先保留，等全院都做完再一起公布。', d:[-3,-4,+4], r:'成果看不見，過程中同仁失去信心。', ok:false},
+   {t:'直接要求全院下月全面上線。', d:[-5,-8,+6], r:'跳過擴散與調整，其他單位準備不足。', ok:false}]},
+ {n:7,place:'醫品中心', time:'14:00', step:'持續推動變革', en:'Sustain Acceleration', who:'醫品中心承辦人',
+  ask:'局部試辦見好就收，還是乘勝追擊、徹底終結舊模式？',
+  lite:{who:'鄰近病房護理師', say:'鄰近病房的同事說：「你們病人比較單純，當然快；我們做不到。」', opts:[{t:'不理會，自己單位做好就好。', d:[-3,-2,0], r:'改革停在一個單位，整體績效不會改善。', ok:false},{t:'邀請他們來觀摩一個早上，再一起調整適合他們病房的版本。', d:[10,6,10], r:'用短期成功的動能帶動其他單位，並允許因地調整。', ok:true},{t:'向主管投訴該病房不配合。', d:[-4,-8,1], r:'究責取代協助，其他單位轉為隱藏問題。', ok:false}]},
+  say:'試辦成功後，半年來有兩個單位又回到舊流程。您會怎麼做？',
+  pro:'（Pro）其中一個單位認為新流程不適合該科病人特性。',
+  opts:[
+   {t:'初步成功就夠了，專案結案。', d:[-8,-5,-10], r:'成功一點就停止，單位逐漸回到原本工作模式。', ok:false},
+   {t:'逐步擴展到所有病房，並延伸到出院準備、住院安排、跨科會診；持續追蹤各單位績效、定期檢討未達標原因。', d:[+10,+6,+14], r:'用短期成功的動能推動更大範圍的制度改革。', ok:true},
+   {t:'對回到舊流程的單位扣考績。', d:[-4,-10,+2], r:'究責取代檢討原因，其他單位轉為隱藏問題。', ok:false}]},
+ {n:8,place:'教育訓練中心', time:'16:00', step:'將變革融入組織文化', en:'Institute Change', who:'人資行政組（人事）',
+  ask:'如果今天專案主管換人，這個制度還能自動運作嗎？',
+  lite:{who:'新進同仁', say:'新進護理師報到，問你病床釋出與交班怎麼做。你會？', opts:[{t:'「先照舊的做，熟了再說。」', d:[-5,0,-8], r:'新人學到舊流程，制度在交接中流失。', ok:false},{t:'用 SOP 與檢核表帶新人，並告訴他改善建議要往哪裡提。', d:[10,8,10], r:'把新流程寫進新人訓練與日常，變革才會留下來。', ok:true},{t:'口頭講一下，有問題再問。', d:[0,-2,-3], r:'沒有制度化的傳承，習慣慢慢回去。', ok:false}]},
+  say:'評鑑通過了。新流程要怎麼留下來，不靠院長每天督促？',
+  pro:'（Pro）明年度主管職務例行輪調，多個單位主管可能更換。',
+  opts:[
+   {t:'召開慶功會，專案小組解散，等下次評鑑前再動員。', d:[-6,+2,-12], r:'評鑑前兩個月全院動員，不是變革，成果隨主管更換消失。', ok:false},
+   {t:'納入 SOP、新人教育訓練、主管績效指標與定期品質檢討，讓跨部門協調與持續改善成為日常。', d:[+12,+8,+12], r:'制度化：即使主管更換，制度仍能運作。這就是評鑑日常化。', ok:true},
+   {t:'貼公告提醒大家持續遵守。', d:[0,-2,-4], r:'只有提醒沒有制度，習慣慢慢回去。', ok:false}]},
+];
+const FORM={
+  base:'https://docs.google.com/forms/d/e/1FAIpQLSdbt2o5Rk6cAC1iU3BVucvUOB7SMvGuM8j8GolfjaSsRjYIsg/viewform',
+  entry:{name:'entry.195115801',unit:'entry.1669940959',mode:'entry.1400583890',
+    q:['entry.675883479','entry.44817837','entry.212430061','entry.396678486','entry.985686173','entry.877698490','entry.1178486129','entry.785651864'],
+    v1:'entry.789489208',v2:'entry.374853462',v3:'entry.1833669886',grade:'entry.1982023657',code:'entry.362695819'}
+};
+const LAB=['共識','士氣','績效'];
+const MODES={lite:{name:'同仁體驗版',start:[30,50,20],neg:1,ev:false},pro:{name:'主管 Pro 版',start:[20,40,15],neg:1.5,ev:true}};
+const ROLE={lite:'單位變革種子',pro:'主管（院長視角決策）'};
+let S={mode:null,day:0,v:[30,50,20],pts:0,picks:[],phase:'title'};
+const $=s=>document.querySelector(s);
+const clamp=n=>Math.max(0,Math.min(100,n));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const getD=i=>{const b=DAYS[i];return S.mode==='lite'?Object.assign({},b,b.lite):b};
+let INPUT=false;
+
+/* ---------- HUD ---------- */
+function bars(){$('#bars').innerHTML=S.v.map((n,i)=>`<div class="bar ${'abc'[i]}" id="bar${i}">${LAB[i]}<b>${n}</b><div class="tr"><i style="width:${n}%"></i></div></div>`).join('')}
+function fx(dd){dd.forEach((x,i)=>{if(!x)return;const e=document.createElement('span');e.className='fx '+(x>0?'up':'dn');e.textContent=(x>0?'+':'')+x;$('#bar'+i).append(e);setTimeout(()=>e.remove(),1900)})}
+function hud(){const d=getD(S.day);$('#hud').hidden=false;$('#wkp').textContent=`第 ${d.n} 週`;$('#wkt').textContent=`Step ${d.n}　${d.step}`;$('#sc').textContent=`🏅 ${S.pts}`;bars();
+ $('#taskTxt').textContent=S.phase==='walk'?`📍 下一步：到「${d.place}」找${d.who}`:`📍 第 ${d.n} 週：${d.place}`}
+
+/* ---------- 底部面板 ---------- */
+function openSheet(html,full){$('#stage').innerHTML=html;const sh=$('#sheet');sh.classList.toggle('full',!!full);sh.classList.add('open');$('#dim').classList.add('on');sh.scrollTop=0;INPUT=false;$('#act').style.display='none'}
+function closeSheet(){$('#sheet').classList.remove('open');$('#dim').classList.remove('on');setTimeout(()=>{INPUT=true},300)}
+const avIcon=m=>m==='lite'?'🧑‍⚕️':'👨‍⚕️';
+
+function titleScreen(){S.phase='title';$('#hud').hidden=true;
+ openSheet(`<div class="hero">🏝️</div>
+ <h1>經營島</h1><p class="sub">小島走走版 · 8 週推動一次醫院變革</p>
+ <div class="card"><p style="margin:0">接下來 8 週，你要在小島上跑來跑去：主管會議室、院長室、護理站、通資組、試辦病房……每週一個地點、一個關鍵決定。</p><p class="muted" style="margin:6px 0 0">每個選擇都會影響三件事：<b style="color:#B86E00">共識</b>、<b style="color:#D6334B">士氣</b>、<b style="color:#14866D">績效</b>。</p></div>
+ <button class="vcard" id="vLite"><div class="av" style="background:#DDF5EC">🧑‍⚕️</div><div><span class="tag" style="background:#DDF5EC;color:#14866D">全院同仁 · 不需管理背景</span><h3>同仁體驗版</h3><p>你是單位的變革種子，8 個情境、每題三選一。</p></div></button>
+ <button class="vcard" id="vPro"><div class="av" style="background:#E3EEFF">👨‍⚕️</div><div><span class="tag" style="background:#E3EEFF;color:#1F6FD1">各級主管 · 決策視角</span><h3>主管 Pro 版</h3><p>院長視角做 8 個決策；起始較低、錯誤扣分 ×1.5，每週多一條現實變數。</p></div></button>
+ <a class="big ghost" href="index.html">← 改玩電影劇情版</a>
+ <p class="note">情境與數值皆為示範設定，用於討論；非實際院務資料。</p>`,true);
+ $('#vLite').onclick=()=>pickMode('lite');$('#vPro').onclick=()=>pickMode('pro');}
+function pickMode(m){S.mode=m;S.v=[...MODES[m].start];S.day=0;S.pts=0;S.picks=[];dressPlayer();briefScreen()}
+function briefScreen(){S.phase='brief';
+ openSheet(`<h2 style="text-align:center">${S.mode==='lite'?'單位現況單':'院務現況單'}</h2><p class="note" style="margin-top:0">${S.mode==='lite'?'單位主管 → 你':'經管會 → 你'} · 第 1 週 · 數值為假設</p>
+ <div class="card">
+  <div class="row"><b>急診待床</b><div>平均 18 小時<small>病人在急診等住院病床的時間</small></div></div>
+  <div class="row"><b>病床周轉</b><div>平均 6 小時<small>出院到下一位病人可入住的時間</small></div></div>
+  <div class="row"><b>滿意度</b><div>因住院延遲的病人抱怨持續增加</div></div>
+  <div class="row"><b>同仁</b><div>習慣既有流程，對改革缺乏動力；工作負擔增加</div></div>
+  <div class="row"><b>部門協調</b><div>病床資料在紙本、Excel、HIS 重複登錄</div></div></div>
+ <div class="card rules"><h3>怎麼玩</h3>
+  <div><b>走路</b>　點地面就會走過去；頭上有「！」的人就是本週要找的人。</div>
+  <div><b>三條狀態</b>　共識、士氣、績效，0–100。</div>
+  <div><b>每週一題</b>　三選一，選完看解析與 Kotter 管理重點。</div>
+  ${MODES[S.mode].ev?'<div><b>Pro 變數</b>　每週一條現實條件；有差距的選擇扣分 ×1.5。</div>':''}</div>
+ <button class="big" id="go">我準備好了，開始第 1 週 ▶</button><button class="big ghost" id="back">← 換一個版本</button>`,true);
+ $('#go').onclick=weekCard;$('#back').onclick=titleScreen;}
+function dotsHTML(){return `<div class="dots">${DAYS.map((d,i)=>`<span class="${i<S.day?'ok':i===S.day?'on':''}">${i+1}</span>`).join('')}</div>`}
+function weekCard(){S.phase='card';const d=getD(S.day);placeNPC();hud();
+ openSheet(`<div class="wk"><div class="n">第 ${d.n} 週</div><div class="st">Step ${d.n}　${d.step}</div><div class="en">${d.en}</div>
+ <p style="margin:10px 0 0;font-size:20px">📍 地點：<b>${d.place}</b>　🕘 ${d.time}</p><p style="margin:2px 0 0;font-size:20px">👤 要找：<b>${d.who}</b></p></div>${dotsHTML()}
+ <button class="big orange" id="go">出發 ›</button>`);
+ $('#go').onclick=()=>{S.phase='walk';hud();closeSheet();showHint()};}
+function talkScreen(){S.phase='q';const d=getD(S.day);hud();
+ openSheet(`<div class="who"><div class="face">${d.who.slice(0,2)}</div><div><small>${d.who} · ${d.place} · 第 ${d.n} 週</small><div class="q">${d.say}</div></div></div>
+ ${MODES[S.mode].ev?`<div class="event"><b>現實變數</b>　${d.pro.replace('（Pro）','')}</div>`:''}
+ <div id="opts">${d.opts.map((o,i)=>`<button class="opt" data-i="${i}"><span class="k">${i+1}</span><span>${o.t}</span></button>`).join('')}</div><div id="after"></div>`);
+ document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>choose(+b.dataset.i));}
+function choose(i){const d=getD(S.day),o=d.opts[i],m=MODES[S.mode];
+ const dd=o.d.map(x=>x<0?Math.round(x*m.neg):x);S.v=S.v.map((n,k)=>clamp(n+dd[k]));if(o.ok)S.pts++;S.picks.push(i);
+ document.querySelectorAll('.opt').forEach((b,k)=>{b.disabled=true;if(k===i)b.classList.add(o.ok?'good':'bad');else if(d.opts[k].ok)b.classList.add('good');else b.classList.add('dim')});
+ hud();fx(dd);say(NPCID,o.ok?'好，就這麼做！':'嗯……再想想？');
+ $('#after').innerHTML=`<div class="res ${o.ok?'ok':'no'}"><h3>${o.ok?'✔ 符合 Kotter 的作法':'✘ 與 Kotter 的作法有差距'}</h3>
+  <div class="delta">${dd.map((x,k)=>`<span class="${x>0?'up':x<0?'dn':'eq'}">${LAB[k]} ${x>0?'+':''}${x}</span>`).join('')}</div>${o.ok?'':o.r}</div>
+  <div class="tip"><b>Kotter 管理重點</b><br>${d.opts.find(q=>q.ok).r}</div><div class="tip ask"><b>靈魂拷問</b><br>${d.ask}</div>
+  <button class="big" id="nx">${S.day<7?`前往第 ${S.day+2} 週 →`:'查看 8 週結果 →'}</button>`;
+ markDone(S.day,o.ok);
+ setTimeout(()=>$('#after').scrollIntoView({behavior:'smooth',block:'start'}),120);
+ $('#nx').onclick=()=>{if(S.day<7){S.day++;weekCard()}else endScreen()};}
+function resultCode(){return `${S.mode==='lite'?'同仁':'Pro'}｜${S.picks.map(p=>p+1).join('-')}｜共識${S.v[0]} 士氣${S.v[1]} 績效${S.v[2]}｜符合${S.pts}/8`}
+function formURL(grade,unit,name){if(!FORM.base)return'';const p=new URLSearchParams({usp:'pp_url'});const put=(k,v)=>{if(k&&v!==undefined)p.append(k,String(v))};
+ put(FORM.entry.name,name);put(FORM.entry.unit,unit);put(FORM.entry.mode,MODES[S.mode].name+'（小島版）');S.picks.forEach((pk,i)=>put(FORM.entry.q[i],pk+1));
+ put(FORM.entry.v1,S.v[0]);put(FORM.entry.v2,S.v[1]);put(FORM.entry.v3,S.v[2]);put(FORM.entry.grade,grade);put(FORM.entry.code,resultCode()+'｜小島版');return FORM.base+'?'+p.toString()}
+function endScreen(){S.phase='end';const avg=Math.round(S.v.reduce((a,b)=>a+b)/3);
+ const g=avg>=75?['變革已成為日常','八步驟多數到位，制度化程度高於多數情境。']:avg>=55?['變革正在推進','動能已建立，部分步驟仍有差距；留意持續推動與制度化。']:['變革尚未形成動能','多數選擇停留在命令或補救；從共識與排除障礙重新開始。'];
+ openSheet(`<div class="grade"><p class="muted" style="margin:0">你的 8 週 · ${MODES[S.mode].name}</p><div class="big2">${g[0]}</div>
+ <p style="margin:6px 0 0">共識 ${S.v[0]}　士氣 ${S.v[1]}　績效 ${S.v[2]}　平均 <b>${avg}</b></p><p style="margin:0">符合 Kotter 作法 <b>${S.pts} / 8</b></p><p class="muted" style="margin:4px 0 0">${g[1]}</p></div>
+ <div class="recap">${DAYS.map((d,i)=>{const ok=getD(i).opts[S.picks[i]].ok;return `<div><b>${i+1}</b> ${d.step}　<span class="${ok?'ok':'no'}">${ok?'符合':'有差距'}</span></div>`}).join('')}</div>
+ <div class="tip"><b>一句話帶走</b><br>看見改變的必要 → 理解方向 → 願意參與 → 看見成果 → 讓改變成為習慣。</div>
+ <div class="card"><h3>回傳結果，協助院內統整</h3><div class="g2"><div class="field"><label for="pname">姓名（必填）</label><input id="pname" maxlength="20" placeholder="請輸入姓名"></div><div class="field"><label for="unit">單位（必填）</label><input id="unit" maxlength="20" placeholder="例：7A 病房"></div></div>
+ <code id="code">${resultCode()}</code>
+ ${FORM.base?'<button class="big orange" id="send">回傳表單 →</button>':''}<button class="big ghost" id="copy">複製結果</button>
+ <p class="note">按「回傳表單」會開啟已預填的 Google 表單，確認後按提交即可。</p></div>
+ <button class="big" id="again">再玩一次</button><button class="big ghost" id="sw">換一個版本</button><a class="big ghost" href="index.html">改玩電影劇情版</a>
+ <p class="note">數值為示範設定，用於討論，非實際院務資料。</p>`,true);
+ const nm=$('#pname'),un=$('#unit'),ready=()=>nm.value.trim()&&un.value.trim();
+ $('#copy').onclick=async()=>{if(!ready()){nm.focus();$('#copy').textContent='請先填姓名與單位';return}const t=`${nm.value.trim()}／${un.value.trim()}｜${resultCode()}｜小島版`;try{await navigator.clipboard.writeText(t);$('#copy').textContent='已複製'}catch(e){$('#copy').textContent='請長按上方文字複製'}};
+ if(FORM.base)$('#send').onclick=()=>{if(!ready()){nm.focus();$('#send').textContent='請先填姓名與單位';return}window.open(formURL(g[0],un.value.trim(),nm.value.trim()),'_blank')};
+ $('#again').onclick=()=>pickMode(S.mode);$('#sw').onclick=()=>{resetLabels();titleScreen()};}
+
+/* ---------- 3D 小島 ---------- */
+const R=(()=>{try{return window.THREE?new THREE.WebGLRenderer({canvas:$('#world'),antialias:true}):null}catch(e){return null}})();
+let scene,cam,sun,player,clock,ring,target=null,NPCID='host';
+const people={},colliders=[],labels=[],BL=[];
+function mat(c,o){o=Object.assign({color:c},o||{});const col=new THREE.Color(o.color);col.lerp(new THREE.Color('#ffffff'),.12);o.color=col;return new THREE.MeshLambertMaterial(o)}
+function geo(g,c,x,y,z,o){const m=new THREE.Mesh(g,mat(c,o));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;return m}
+function box(w,h,d,c,x,y,z,o){return geo(new THREE.BoxGeometry(w,h,d),c,x,y,z,o)}
+function label(html,cls,obj,dy){const e=document.createElement('div');e.className='lb '+cls;e.innerHTML=html;$('#labels').append(e);const l={e,obj,dy:dy||0,show:true};labels.push(l);return l}
+function person(o){const g=new THREE.Group(),s=o.small?.8:1,sk=o.skin||'#F6CFA8';
+ const C=(rt,rb,h,c,x,y,z)=>geo(new THREE.CylinderGeometry(rt,rb,h,14),c,x,y,z),Sp=(r,c,x,y,z,sy)=>{const m=geo(new THREE.SphereGeometry(r,20,16),c,x,y,z);if(sy)m.scale.y=sy;return m};
+ const legL=new THREE.Group(),legR=new THREE.Group();[legL,legR].forEach(l=>{l.add(C(.11,.11,.5,o.pants,0,-.25,0));l.add(Sp(.13,'#4A3A2E',0,-.52,.04,.6))});legL.position.set(-.13,.56,0);legR.position.set(.13,.56,0);
+ const body=C(.24,.34,.62,o.shirt,0,.86,0);
+ const armL=new THREE.Group(),armR=new THREE.Group();[armL,armR].forEach(a=>{a.add(C(.08,.09,.48,o.shirt,0,-.22,0));a.add(Sp(.09,sk,0,-.5,0))});armL.position.set(.33,1.12,0);armR.position.set(-.33,1.12,0);armL.rotation.z=.15;armR.rotation.z=-.15;
+ const head=Sp(.44,sk,0,1.52,0),hair=Sp(.47,o.hair,0,1.66,-.07,.75);
+ g.add(legL,legR,body,armL,armR,head,hair);
+ [-.15,.15].forEach(x=>{g.add(Sp(.055,'#2B2238',x,1.5,.4,1.3));g.add(Sp(.07,'#FF9AA8',x*1.6,1.4,.35,.6))});
+ if(o.inner)g.add(C(.15,.2,.5,o.inner,0,.9,.1));
+ if(o.tie)g.add(box(.08,.32,.04,o.tie,0,.95,.3));
+ if(o.steth){const t=new THREE.Mesh(new THREE.TorusGeometry(.17,.025,6,16,Math.PI),mat('#3A4A5A'));t.rotation.z=Math.PI;t.position.set(0,1.12,.25);g.add(t)}
+ if(o.pony)g.add(Sp(.2,o.hair,0,1.55,-.45,1.3));
+ if(o.bun)g.add(Sp(.2,o.hair,0,2.02,-.12));
+ if(o.glasses)[-.15,.15].forEach(x=>{const r=new THREE.Mesh(new THREE.TorusGeometry(.09,.018,6,14),mat('#2B2238'));r.position.set(x,1.5,.43);g.add(r)});
+ if(o.cap){g.add(C(.45,.47,.18,o.cap,0,1.95,0))}
+ g.scale.setScalar(s);g.userData.parts={legL,legR,armL,armR};return g}
+const LOOK={
+ seed:{shirt:'#2BB3A3',pants:'#1F6E66',hair:'#2B1B12',pony:true},
+ dean:{shirt:'#FFFFFF',inner:'#8FB8E8',tie:'#1F4E8C',pants:'#2B3A55',hair:'#1E1A18',steth:true,glasses:true},
+ doc:{shirt:'#FFFFFF',inner:'#B9D7C2',pants:'#3A4A5A',hair:'#2B2018',steth:true},
+ docF:{shirt:'#FFFFFF',inner:'#F2B8C6',pants:'#3A4A5A',hair:'#3A2416',bun:true,steth:true},
+ nurse:{shirt:'#7FC8F8',pants:'#3C6FB0',hair:'#2B1B12',bun:true},
+ nurse2:{shirt:'#F7A8C0',pants:'#B05A7A',hair:'#4A2A18',pony:true},
+ it:{shirt:'#4A6FA5',pants:'#2B3A55',hair:'#1E1A18',glasses:true},
+ admin:{shirt:'#E8B04A',pants:'#5A4A3A',hair:'#3A2416',pony:true},
+ qa:{shirt:'#7AB648',pants:'#3E6A2A',hair:'#2B1B12',glasses:true},
+ host:{shirt:'#FFFFFF',inner:'#C9A2E8',pants:'#3A4A5A',hair:'#2B1B12',steth:true}};
+// 8 個地點（後排 1–4、前排 5–8，門都朝南）
+const PLACE_STYLE=[['#F4F1EA','#C0392B','🗂️'],['#F4F1EA','#123A73','🏛️'],['#FFF6E5','#E8762C','💡'],['#EAF6FF','#3C84C0','🩺'],['#EEF1F6','#4A6FA5','💻'],['#EFFAF2','#14866D','🛏️'],['#F3FAE9','#7AB648','📊'],['#FFF2F2','#C2547A','🎓']];
+const POS=[[-15,-10],[-5,-10],[5,-10],[15,-10],[-15,4],[-5,4],[5,4],[15,4]];
+function build(){
+ R.setPixelRatio(Math.min(2,window.devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+ scene=new THREE.Scene();scene.background=new THREE.Color('#9FD8FF');scene.fog=new THREE.Fog('#9FD8FF',38,80);
+ cam=new THREE.PerspectiveCamera(42,1,.1,200);
+ scene.add(new THREE.HemisphereLight('#ffffff','#5E8F4A',.62));
+ sun=new THREE.DirectionalLight('#fff4e0',.62);sun.position.set(-12,24,14);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);
+ const sc=sun.shadow.camera;sc.left=-26;sc.right=26;sc.top=26;sc.bottom=-26;sc.far=80;scene.add(sun);scene.add(sun.target);
+ const fill=new THREE.DirectionalLight('#ffffff',.3);fill.position.set(6,10,24);scene.add(fill);
+ // 海與島
+ const sea=new THREE.Mesh(new THREE.PlaneGeometry(260,260),mat('#4FB3F0',{emissive:'#1a5a9a',emissiveIntensity:.12}));sea.rotation.x=-Math.PI/2;sea.position.y=-.35;scene.add(sea);
+ const sand=new THREE.Mesh(new THREE.CylinderGeometry(1,1,.5,48),mat('#F2DDAA'));sand.scale.set(31,1,23);sand.position.y=-.2;sand.receiveShadow=true;scene.add(sand);
+ const grass=new THREE.Mesh(new THREE.CylinderGeometry(1,1,.5,48),mat('#78BE5A'));grass.scale.set(28.5,1,20.5);grass.position.y=-.14;grass.receiveShadow=true;grass.name='ground';scene.add(grass);
+ // 道路
+ const road='#E8D6AE';scene.add(box(44,.06,3,road,0,.13,-3.2));scene.add(box(44,.06,3,road,0,.13,10.6));
+ [-10,0,10].forEach(x=>scene.add(box(2.6,.06,13.8,road,x,.12,3.7)));
+ POS.forEach(([x,z])=>scene.add(box(1.6,.07,z<0?4.2:3.2,'#F2E4C4',x,.14,z<0?-6.2:7.6)));
+ // 中央廣場：島名牌與花圃
+ const plaza=new THREE.Mesh(new THREE.CylinderGeometry(2.6,2.6,.12,32),mat('#F7E9C8'));plaza.position.set(0,.15,-3.2);plaza.receiveShadow=true;scene.add(plaza);
+ const pole=box(.18,2.2,.18,'#8A6B3E',0,1.2,-3.2);scene.add(pole);const sign=box(2.6,.9,.15,'#123A73',0,2.3,-3.2);scene.add(sign);colliders.push({c:[0,-3.2],r:.5});
+ const sa=new THREE.Object3D();sa.position.set(0,3.4,-3.2);scene.add(sa);label('🏝️ 經營島','bld',sa);
+ // 建築
+ POS.forEach(([x,z],i)=>{const [wall,trim,ic]=PLACE_STYLE[i],w=6.4,d=4.6,h=i===1?3.6:3,gr=new THREE.Group();
+  gr.add(box(w,h,d,wall,0,h/2,0));gr.add(box(w+.3,.35,d+.3,trim,0,h+.17,0));gr.add(box(w-1.2,.5,d-1.2,wall,0,h+.55,0));
+  gr.add(box(1.3,2.1,.12,'#6A4A2A',0,1.05,d/2+.04));gr.add(box(2.2,.5,.14,trim,0,2.45,d/2+.06));
+  [-1,1].forEach(s=>gr.add(box(1.2,.9,.1,'#BFE3FF',s*(w/2-1.3),h*.55,d/2+.05)));
+  if(i===3||i===5){gr.add(box(.7,.22,.12,'#E53935',0,h-.35,d/2+.08));gr.add(box(.22,.7,.12,'#E53935',0,h-.35,d/2+.08))}
+  gr.position.set(x,0,z);scene.add(gr);colliders.push({b:[x-w/2,z-d/2,x+w/2,z+d/2]});
+  const an=new THREE.Object3D();an.position.set(x,h+1.5,z);scene.add(an);
+  const l=label(`<i>${i+1}</i>${ic} ${DAYS[i].place}`,'bld',an);BL.push({x,z,d,l})});
+ // 樹與小物
+ const tree=(x,z,s)=>{s=s||1;const t=new THREE.Group();t.add(geo(new THREE.CylinderGeometry(.18*s,.26*s,1.4*s,10),'#9A6A3A',0,.7*s,0));t.add(geo(new THREE.SphereGeometry(1.1*s,18,14),'#5DBB63',0,2.1*s,0));t.add(geo(new THREE.SphereGeometry(.7*s,16,12),'#6FCB72',.5*s,2.65*s,.2*s));t.position.set(x,0,z);scene.add(t);colliders.push({c:[x,z],r:.5*s})};
+ const palm=(x,z)=>{const t=new THREE.Group();const tr=geo(new THREE.CylinderGeometry(.14,.22,3,8),'#B08850',0,1.5,0);tr.rotation.z=.12;t.add(tr);for(let k=0;k<6;k++){const lf=box(1.8,.08,.45,'#4FA35A',0,0,0);lf.position.set(Math.cos(k)*0.8+.2,3,Math.sin(k)*0.8);lf.rotation.y=-k;lf.rotation.z=-.35;t.add(lf)}t.position.set(x,0,z);scene.add(t);colliders.push({c:[x,z],r:.4})};
+ [[-24,-6],[24,-6],[-24,9],[24,9],[-20,14],[20,14],[-21,-13],[21,-13],[0,15.5],[-9,16],[9,16]].forEach(([x,z])=>palm(x,z));
+ [[-10,-12.8],[0,-13],[10,-12.8],[-20,-2],[20,-2],[-20,4],[20,4]].forEach(([x,z],i)=>tree(x,z,.8+(i%3)*.15));
+ const fl=['#FF8FA0','#FFC24D','#FFFFFF','#C59BFF'];for(let i=0;i<70;i++){const x=-25+Math.random()*50,z=-15+Math.random()*31;if(Math.abs(z+3.2)<2.2||Math.abs(z-10.6)<2.2)continue;if(POS.some(([px,pz])=>Math.abs(x-px)<4.2&&Math.abs(z-pz)<4.2))continue;if([-10,0,10].some(v=>Math.abs(x-v)<1.8)&&z>-3&&z<11)continue;if((x/27)**2+(z/19)**2>1)continue;scene.add(box(.18,.25,.18,fl[i%4],x,.12,z))}
+ const bench=(x,z)=>{const b=new THREE.Group();b.add(box(1.8,.12,.6,'#B07A45',0,.5,0));b.add(box(1.8,.5,.1,'#B07A45',0,.8,-.28));b.add(box(.1,.5,.5,'#555',-.8,.25,0));b.add(box(.1,.5,.5,'#555',.8,.25,0));b.position.set(x,0,z);scene.add(b);colliders.push({b:[x-.9,z-.35,x+.9,z+.35]})};
+ bench(-5,-.4);bench(5,-.4);bench(-5,13.2);bench(5,13.2);
+ // 小船
+ const boat=new THREE.Group();boat.add(box(2.4,.5,1,'#FFFFFF',0,0,0));boat.add(box(.08,1.8,.08,'#8A6B3E',0,1,0));const sl=box(.05,1.3,.9,'#FFB020',0,1.1,.45);boat.add(sl);boat.position.set(-34,-.1,6);scene.add(boat);people._boat=boat;
+ // 角色
+ player=person(LOOK.seed);scene.add(player);player.position.set(0,0,-1);
+ const host=person(LOOK.host);host.userData.id='host';scene.add(host);people.host=host;host.userData.nm=label('','nm',host,2.05);host.userData.bang=label('！','bang',host,2.7);
+ WANDER.forEach((w,k)=>{const p=person(LOOK[w.look]);p.userData.id='w'+k;p.userData.w=w;p.position.set(w.box[0]+Math.random()*(w.box[1]-w.box[0]),0,w.box[2]+Math.random()*(w.box[3]-w.box[2]));scene.add(p);people['w'+k]=p;p.userData.nm=label(w.name,'nm',p,2.05)});
+ ring=new THREE.Mesh(new THREE.TorusGeometry(.9,.08,8,32),mat('#FFB020',{emissive:'#FFB020',emissiveIntensity:.6}));ring.rotation.x=-Math.PI/2;ring.position.y=.2;scene.add(ring);
+ clock=new THREE.Clock();resize();addEventListener('resize',resize);
+}
+const WANDER=[
+ {look:'nurse',name:'護理師',box:[-20,-8,-4.5,-2],idle:['病床又滿了……','急診那邊在問床','剛出院的床還沒清']},
+ {look:'doc',name:'主治醫師',box:[6,20,-4.5,-2],idle:['今天門診好多人','這流程到底誰負責？','有空床嗎？']},
+ {look:'it',name:'通資組同仁',box:[-12,-8,0,9],idle:['HIS 升級案在跑','又要我加一個欄位？','單一登錄可以做']},
+ {look:'nurse2',name:'專科護理師',box:[8,12,0,9],idle:['交班表要登三次','新流程我願意試','病人一直問何時有床']},
+ {look:'admin',name:'人資行政組',box:[-18,-2,9.5,11.8],idle:['新人訓練下週開始','SOP 要更新了','教育訓練場地訂好了']},
+ {look:'qa',name:'醫品中心承辦人',box:[2,18,9.5,11.8],idle:['指標這個月要上報','數據我來整理','持續改善比評鑑更重要']},
+ {look:'docF',name:'住院醫師',box:[-2,2,-1,9],idle:['會診單送出去了','出院準備要早一點','加油！']}];
+const HOST_LOOK=[ 'doc','host','admin','nurse','it','nurse2','qa','admin'];
+function dressPlayer(){const pos=player.position.clone(),rot=player.rotation.y;scene.remove(player);player=person(S.mode==='pro'?LOOK.dean:LOOK.seed);player.position.copy(pos);player.rotation.y=rot;scene.add(player);
+ if(player.userData.nm){} const me=label(S.mode==='pro'?'你（院長視角）':'你（變革種子）','nm',player,2.05);if(window._meL){_meL.e.remove();labels.splice(labels.indexOf(_meL),1)}window._meL=me}
+function placeNPC(){const i=S.day,[x,z]=POS[i],h=people.host,d=getD(i);
+ const lk=LOOK[HOST_LOOK[i]];scene.remove(h);const nh=person(lk);const pp=nh.userData.parts;nh.userData=h.userData;nh.userData.parts=pp;nh.position.set(x+1.6,0,z+3.4);nh.rotation.y=-.3;scene.add(nh);people.host=nh;
+ h.userData.nm.obj=nh;h.userData.bang.obj=nh;nh.userData.nm.e.textContent=d.who;
+ BL.forEach((b,k)=>{b.l.e.classList.toggle('now',k===i);})}
+function markDone(i,ok){BL[i].l.e.classList.remove('now');BL[i].l.e.classList.add('done');if(!BL[i].l.e.querySelector('.ck'))BL[i].l.e.insertAdjacentHTML('beforeend',`<span class="ck"> ${ok?'✔':'△'}</span>`)}
+function resetLabels(){BL.forEach(b=>{b.l.e.classList.remove('done','now');const c=b.l.e.querySelector('.ck');if(c)c.remove()})}
+function resize(){if(!R)return;const w=innerWidth,h=innerHeight;R.setSize(w,h,false);cam.aspect=w/h;cam.fov=w<h?48:38;cam.updateProjectionMatrix()}
+function camOff(){return innerWidth<innerHeight?[0,21,22]:[0,26,23]}
+function blocked(x,z,self){if((x/27.5)**2+(z/19.5)**2>1)return true;
+ for(const c of colliders){if(c.b){if(x>c.b[0]-.35&&x<c.b[2]+.35&&z>c.b[1]-.35&&z<c.b[3]+.35)return true}else if(Math.hypot(x-c.c[0],z-c.c[1])<c.r+.35)return true}
+ for(const k in people){const p=people[k];if(k[0]==='_'||p===self)continue;if(Math.hypot(x-p.position.x,z-p.position.z)<.6)return true}
+ if(self!==player&&Math.hypot(x-player.position.x,z-player.position.z)<.6)return true;return false}
+function step(o,dx,dz){const nx=o.position.x+dx,nz=o.position.z+dz;if(!blocked(nx,nz,o)){o.position.x=nx;o.position.z=nz;return true}
+ if(!blocked(nx,o.position.z,o)){o.position.x=nx;return true}if(!blocked(o.position.x,nz,o)){o.position.z=nz;return true}return false}
+function anim(p,moving,t){const u=p.userData.parts;if(!u)return;const a=moving?Math.sin(t*10)*.6:0;u.legL.rotation.x=a;u.legR.rotation.x=-a;u.armL.rotation.x=-a*.8;u.armR.rotation.x=a*.8}
+function say(id,text){const p=people[id];if(!p)return;const u=p.userData;if(u.say){u.say.e.remove();labels.splice(labels.indexOf(u.say),1)}const l=label(esc(text),'say',p,2.75);u.say=l;clearTimeout(u.st);u.st=setTimeout(()=>{l.e.remove();const j=labels.indexOf(l);if(j>=0)labels.splice(j,1);u.say=null},3200)}
+let hintT;function showHint(){const h=$('#hint');h.style.opacity=1;clearTimeout(hintT);hintT=setTimeout(()=>h.style.opacity=0,5000)}
+const v3=window.THREE?new THREE.Vector3():null,ray=window.THREE?new THREE.Raycaster():null,mv=window.THREE?new THREE.Vector2():null;let stuck=0;
+function nearHost(r){const h=people.host;return Math.hypot(h.position.x-player.position.x,h.position.z-player.position.z)<r}
+function arriveHost(){const h=people.host;h.rotation.y=Math.atan2(player.position.x-h.position.x,player.position.z-h.position.z);player.rotation.y=Math.atan2(h.position.x-player.position.x,h.position.z-player.position.z);if(S.phase==='walk')talkScreen()}
+function loop(){requestAnimationFrame(loop);const dt=Math.min(.05,clock.getDelta()),t=clock.elapsedTime;
+ let dx=0,dz=0;
+ if(target&&INPUT){const ex=target.x-player.position.x,ez=target.z-player.position.z,d=Math.hypot(ex,ez);let done=d<.25;
+  if(target.talk&&target.talk!=='host'){const p=people[target.talk];if(Math.hypot(p.position.x-player.position.x,p.position.z-player.position.z)<1.6)done=true}
+  if(target.talk==='host'&&nearHost(1.7))done=true;
+  if(done){const tg=target;target=null;if(tg.talk==='host')arriveHost();else if(tg.talk){const p=people[tg.talk];p.rotation.y=Math.atan2(player.position.x-p.position.x,player.position.z-p.position.z);const w=p.userData.w;say(tg.talk,w.idle[Math.floor(Math.random()*w.idle.length)])}}else{dx=ex/d;dz=ez/d}}
+ const moving=!!(dx||dz);if(moving){const sp=5.4*dt;if(!step(player,dx*sp,dz*sp)){if(++stuck>25){target=null;stuck=0}}else stuck=0;player.rotation.y=Math.atan2(dx,dz)}
+ anim(player,moving,t);
+ for(const k in people){if(k[0]==='_'||k==='host')continue;const p=people[k],u=p.userData,w=u.w;
+  if(u.say){anim(p,false,t);continue}
+  if(!u.goal||Math.hypot(u.goal[0]-p.position.x,u.goal[1]-p.position.z)<.3){u.wait=(u.wait||0)-dt;anim(p,false,t);if(u.wait<=0){u.goal=[w.box[0]+Math.random()*(w.box[1]-w.box[0]),w.box[2]+Math.random()*(w.box[3]-w.box[2])];u.wait=1.5+Math.random()*3}continue}
+  const ex=u.goal[0]-p.position.x,ez=u.goal[1]-p.position.z,d=Math.hypot(ex,ez),sp=1.7*dt;
+  if(!step(p,ex/d*sp,ez/d*sp))u.goal=null;else{p.rotation.y=Math.atan2(ex,ez);anim(p,true,t)}}
+ const b=people._boat;b.position.x+=dt*1.2;if(b.position.x>40)b.position.x=-40;b.position.y=-.1+Math.sin(t*2)*.06;
+ const h=people.host,act=S.phase==='walk';h.userData.bang.show=act;ring.visible=act;
+ if(act){ring.position.x=h.position.x;ring.position.z=h.position.z;ring.scale.setScalar(1+Math.sin(t*4)*.12)}
+ const off=camOff();v3.set(player.position.x+off[0],off[1],player.position.z+off[2]);cam.position.lerp(v3,.08);cam.lookAt(player.position.x,0,player.position.z-(innerWidth<innerHeight?3.5:6));
+ sun.position.set(player.position.x-12,24,player.position.z+14);sun.target.position.set(player.position.x,0,player.position.z);
+ const ab=$('#act');if(act&&INPUT&&nearHost(2.6)){ab.textContent='💬 和'+getD(S.day).who+'說話';ab.style.display='block';$('#hint').style.opacity=0}else ab.style.display='none';
+ R.render(scene,cam);
+ for(const l of labels){if(!l.show){l.e.style.display='none';continue}l.obj.getWorldPosition(v3);v3.y+=l.dy;v3.project(cam);
+  if(v3.z>1||v3.x<-1.2||v3.x>1.2||v3.y<-1.2||v3.y>1.2){l.e.style.display='none';continue}l.e.style.display='';l.e.style.left=((v3.x+1)/2*innerWidth)+'px';l.e.style.top=((1-v3.y)/2*innerHeight)+'px'}
+ const ar=$('#arrow');
+ if(act&&INPUT){v3.set(h.position.x,1,h.position.z);v3.project(cam);const sx=(v3.x+1)/2*innerWidth,sy=(1-v3.y)/2*innerHeight,m=60,top=200;
+  const on=v3.z<=1&&sx>=m&&sx<=innerWidth-m&&sy>=top&&sy<=innerHeight-m;
+  if(on){ar.style.display='none'}else{const cx=innerWidth/2,cy=innerHeight/2;let ax=sx-cx,ay=sy-cy;if(v3.z>1){ax=-ax;ay=-ay}const k=Math.min((innerWidth/2-m)/Math.abs(ax||1e-6),(innerHeight/2-m-40)/Math.abs(ay||1e-6));
+   ar.style.display='grid';ar.style.left=(cx+ax*k)+'px';ar.style.top=Math.max(top,cy+ay*k)+'px';ar.querySelector('i').style.transform=`rotate(${Math.atan2(ay,ax)+Math.PI/2}rad)`;ar.querySelector('b').textContent=getD(S.day).place}}else ar.style.display='none';
+}
+let downAt=null;
+$('#world').addEventListener('pointerdown',e=>{downAt=[e.clientX,e.clientY,performance.now()]});
+$('#world').addEventListener('pointerup',e=>{if(!downAt||!INPUT)return;const [x,y,t0]=downAt;downAt=null;if(Math.hypot(e.clientX-x,e.clientY-y)>12||performance.now()-t0>600)return;
+ mv.set(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1);ray.setFromCamera(mv,cam);$('#hint').style.opacity=0;
+ const meshes=[];for(const k in people){if(k[0]==='_')continue;people[k].traverse(m=>{if(m.isMesh){m.userData.owner=k;meshes.push(m)}})}
+ const hp=ray.intersectObjects(meshes,false)[0];
+ if(hp){const id=hp.object.userData.owner,p=people[id];if(id==='host'&&nearHost(2.6)){arriveHost();return}target={x:p.position.x,z:p.position.z+1.2,talk:id};return}
+ const hit=ray.intersectObject(scene.getObjectByName('ground'),false)[0];
+ if(hit){// 點到建築附近 → 走到門口
+  const bi=BL.findIndex(b=>Math.abs(hit.point.x-b.x)<3.6&&Math.abs(hit.point.z-b.z)<2.8);
+  if(bi===S.day&&S.phase==='walk'){const h=people.host;target={x:h.position.x,z:h.position.z+1.2,talk:'host'};return}
+  target={x:hit.point.x,z:hit.point.z}}});
+$('#act').onclick=()=>{if(S.phase==='walk'&&nearHost(2.6))arriveHost()};
+$('#dim').onclick=()=>{};
+if(R){try{build();loop();titleScreen()}catch(e){console.error(e);$('#fallback').style.display='block'}}else{$('#fallback').style.display='block'}
+</script>
+</body>
+</html>
